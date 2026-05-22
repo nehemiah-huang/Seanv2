@@ -1,0 +1,69 @@
+/* FILE: css/screens/prescriptions.css | SCREEN: Prescriptions */
+
+.dup-warning {
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--warn-bg);
+  border: 1.5px solid #FFE082;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.dup-warning .material-icons { font-size: 18px; color: var(--warn); flex-shrink: 0; margin-top:1px; }
+.dup-warning span { font-size: 12px; color: #7B5800; line-height: 1.5; }
+[data-theme="dark"] .dup-warning { border-color: rgba(249,168,37,.3); }
+[data-theme="dark"] .dup-warning span { color: #ffe082; }
+
+.drug-chip-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+
+.drug-chip-item {
+  border-radius: 8px;
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dc-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.dc-dose { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.dc-remove {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: none; background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; outline: none;
+}
+.dc-remove .material-icons { font-size: 16px; color: var(--text-hint); }
+.dc-remove:hover .material-icons { color: var(--error); }
+
+.drug-add-row { display: flex; gap: 8px; align-items: flex-end; }
+.drug-add-row .input-group { flex: 1; margin-bottom: 0; }
+
+.add-drug-btn {
+  width: 46px; height: 46px; border-radius: 23px;
+  border: none; background: var(--brand); color: #fff;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; outline: none; flex-shrink: 0;
+  transition: background var(--transition);
+}
+.add-drug-btn:hover { background: var(--brand-dark); }
+.add-drug-btn .material-icons { font-size: 22px; }
+
+/* History cards */
+.rx-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 0.5px solid var(--border);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.rx-card:hover { background: var(--bg-input); }
+.rx-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.rx-patient { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.rx-date    { font-size: 11px; color: var(--text-hint); }
+.rx-meta    { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.rx-drugs   { display: flex; flex-wrap: wrap; gap: 4px; }

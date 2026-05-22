@@ -1,0 +1,247 @@
+<!-- ============================================================
+   FILE: sales/index.html
+   SCREEN: Sales Screen
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare — Sales</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/screens/sales.css">
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- TOP NAV (tablet/desktop) -->
+  <nav class="top-nav" id="topNav"></nav>
+
+  <!-- MOBILE TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a class="icon-btn" href="../dashboard/" aria-label="Back">
+        <span class="material-icons">arrow_back</span>
+      </a>
+      <span class="top-bar-title">New Sale</span>
+    </div>
+    <div class="top-bar-actions">
+      <button class="icon-btn" aria-label="Cart" style="position:relative;" onclick="scrollToCart()">
+        <span class="material-icons">shopping_cart</span>
+        <span class="cart-badge" id="cartBadge" style="display:none;position:absolute;top:6px;right:6px;background:var(--error);color:#fff;font-size:10px;font-weight:700;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center;">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Screen body -->
+  <div class="screen-body">
+
+    <!-- Page header (desktop) -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">New Sale</div>
+        <div class="page-subtitle">Add drugs to cart and complete the sale</div>
+      </div>
+    </div>
+
+    <div class="sales-two-col">
+
+      <!-- LEFT: Cart + Totals -->
+      <div>
+        <div class="cart-zone">
+          <div class="cart-zone-header">
+            <span class="cart-zone-title">Cart <span id="cartCount" style="color:var(--text-hint);font-weight:400;">(0 items)</span></span>
+            <button class="clear-cart-btn" id="clearCartBtn" onclick="clearCart()" style="display:none;">Clear cart</button>
+          </div>
+          <div class="cart-list" id="cartList">
+            <div class="cart-empty-msg">
+              <span class="material-icons">shopping_basket</span>
+              <span>Cart is empty</span>
+            </div>
+          </div>
+          <div class="totals-section">
+            <div class="total-row">
+              <span class="total-lbl">Subtotal</span>
+              <span class="total-val" id="subtotal">GH₵ 0.00</span>
+            </div>
+            <div class="total-row">
+              <span class="total-lbl">Discount</span>
+              <div class="discount-input-wrap">
+                <span>GH₵</span>
+                <input class="discount-field" type="number" id="discountInput" placeholder="0.00" min="0" step="0.01" oninput="calcTotals()">
+              </div>
+            </div>
+            <div class="grand-row">
+              <span class="grand-lbl">Grand total</span>
+              <span class="grand-val" id="grandTotal">GH₵ 0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment methods -->
+        <div class="add-zone">
+          <div class="pay-label">Payment method</div>
+          <div class="pay-methods">
+            <button class="pay-chip selected" id="pay-cash" onclick="selectPay('cash')">
+              <span class="material-icons">payments</span> Cash
+            </button>
+            <button class="pay-chip" id="pay-momo" onclick="selectPay('momo')">
+              <span class="material-icons">phone_android</span> MoMo
+            </button>
+            <button class="pay-chip" id="pay-voda" onclick="selectPay('voda')">
+              <span class="material-icons">phone_android</span> Voda
+            </button>
+            <button class="pay-chip" id="pay-card" onclick="selectPay('card')">
+              <span class="material-icons">credit_card</span> Card
+            </button>
+          </div>
+
+          <button class="btn btn-success" id="completeSaleBtn" onclick="completeSale()" disabled style="opacity:0.4;">
+            <span class="material-icons">check_circle</span> Complete sale
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Drug search + add -->
+      <div class="add-zone">
+        <div class="section-label" style="margin-top:0;">Add drug to cart</div>
+
+        <div class="search-suggestions-wrap">
+          <div class="input-with-icon">
+            <span class="material-icons input-icon-lead">search</span>
+            <input
+              class="input-field"
+              type="text"
+              id="drugSearch"
+              placeholder="Search drug to add…"
+              oninput="handleDrugSearch(this.value)"
+              autocomplete="off"
+            >
+          </div>
+          <div class="suggestions-dropdown" id="suggestions"></div>
+        </div>
+
+        <!-- Selected drug -->
+        <div id="selectedDrugWrap" style="display:none;margin-top:12px;">
+          <div class="selected-chip">
+            <div>
+              <div class="sc-name" id="scName"></div>
+              <div class="sc-meta" id="scMeta"></div>
+            </div>
+            <button class="sc-clear" onclick="clearSelected()" aria-label="Remove">
+              <span class="material-icons">close</span>
+            </button>
+          </div>
+
+          <div class="stepper-row" style="margin-top:10px;">
+            <div class="stepper">
+              <button class="step-btn" onclick="changeQty(-1)">
+                <span class="material-icons">remove</span>
+              </button>
+              <span class="step-val" id="qtyVal">1</span>
+              <button class="step-btn" onclick="changeQty(1)">
+                <span class="material-icons">add</span>
+              </button>
+            </div>
+            <button class="btn btn-success" style="height:46px;" onclick="addToCart()">
+              <span class="material-icons">add_shopping_cart</span> Add to cart
+            </button>
+          </div>
+
+          <div class="error-msg" id="stockError" style="display:none;">
+            <span class="material-icons">error_outline</span>
+            <span id="stockErrorText">Not enough stock</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end sales-two-col -->
+  </div>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a class="nav-tab" data-page="dashboard" href="../dashboard/">
+      <div class="nav-pill"><span class="material-icons">home</span></div>
+      <span class="nav-tab-label">Home</span>
+    </a>
+    <a class="nav-tab" data-page="inventory" href="../inventory/">
+      <div class="nav-pill"><span class="material-icons">inventory_2</span></div>
+      <span class="nav-tab-label">Inventory</span>
+    </a>
+    <a class="nav-tab active" data-page="sales" href="../sales/">
+      <div class="nav-pill"><span class="material-icons">point_of_sale</span></div>
+      <span class="nav-tab-label">Sales</span>
+    </a>
+    <a class="nav-tab" data-page="reports" href="../reports/">
+      <div class="nav-pill"><span class="material-icons">bar_chart</span></div>
+      <span class="nav-tab-label">Reports</span>
+    </a>
+    <a class="nav-tab" data-page="prescriptions" href="../prescriptions/">
+      <div class="nav-pill"><span class="material-icons">more_horiz</span></div>
+      <span class="nav-tab-label">More</span>
+    </a>
+  </nav>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeReceipt()"></div>
+
+<!-- Receipt bottom sheet -->
+<div class="bottom-sheet" id="receiptSheet">
+  <div class="sheet-handle" onclick="closeReceipt()"><div></div></div>
+  <div class="sheet-title">Receipt</div>
+  <div class="sheet-body">
+    <div class="receipt-logo">
+      <span class="material-icons">medication</span>
+      <div class="receipt-logo-name">MedCare Pharmacy</div>
+      <div class="receipt-logo-sub" id="receiptDate"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="receipt-row">
+      <span class="receipt-key">Cashier</span>
+      <span class="receipt-val" id="receiptCashier">Admin</span>
+    </div>
+    <div class="receipt-row">
+      <span class="receipt-key">Payment</span>
+      <span class="receipt-val" id="receiptPayment">Cash</span>
+    </div>
+    <div class="divider"></div>
+    <div id="receiptItems"></div>
+    <div class="divider"></div>
+    <div class="receipt-row">
+      <span class="receipt-key">Subtotal</span>
+      <span class="receipt-val" id="receiptSubtotal"></span>
+    </div>
+    <div class="receipt-row" id="receiptDiscountRow">
+      <span class="receipt-key">Discount</span>
+      <span class="receipt-val" id="receiptDiscount"></span>
+    </div>
+    <div class="receipt-total-row">
+      <span class="receipt-total-lbl">Total</span>
+      <span class="receipt-total-val" id="receiptTotal"></span>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn btn-outline" onclick="closeReceipt()" style="flex:1;">
+      <span class="material-icons">print</span> Print
+    </button>
+    <button class="btn btn-success" onclick="newSale()" style="flex:1;">
+      <span class="material-icons">add</span> New sale
+    </button>
+  </div>
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span class="material-icons" id="snack-icon">check_circle</span>
+  <span id="snack-msg"></span>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/screens/sales.js"></script>
+</body>
+</html>

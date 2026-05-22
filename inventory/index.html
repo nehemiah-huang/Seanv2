@@ -1,0 +1,259 @@
+<!-- ============================================================
+   FILE: inventory/index.html
+   SCREEN: Inventory Screen
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare — Inventory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/screens/inventory.css">
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- TOP NAV (tablet/desktop) -->
+  <nav class="top-nav" id="topNav"></nav>
+
+  <!-- MOBILE TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a class="icon-btn" href="../dashboard/" aria-label="Back">
+        <span class="material-icons">arrow_back</span>
+      </a>
+      <span class="top-bar-title">Inventory</span>
+    </div>
+    <div class="top-bar-actions">
+      <button class="icon-btn" onclick="toggleMobileTheme()" aria-label="Toggle theme">
+        <span class="material-icons" id="themeIcon">dark_mode</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Screen body -->
+  <div class="screen-body">
+
+    <!-- Page header (desktop) -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Inventory</div>
+        <div class="page-subtitle">Manage your drug stock</div>
+      </div>
+      <button class="btn btn-success" style="width:auto;padding:0 20px;" onclick="openSheet()">
+        <span class="material-icons">add</span> Add drug
+      </button>
+    </div>
+
+    <!-- Search + summary -->
+    <div class="input-group" style="margin-bottom:6px;">
+      <div class="input-with-icon">
+        <span class="material-icons input-icon-lead">search</span>
+        <input
+          class="input-field"
+          type="text"
+          id="searchInput"
+          placeholder="Search drugs…"
+          oninput="handleSearch(this.value)"
+          autocomplete="off"
+        >
+      </div>
+    </div>
+    <div class="text-xs text-hint mb-12" id="searchHint">Showing all drugs</div>
+
+    <div class="summary-row">
+      <div class="sum-chip blue">
+        <span class="material-icons">medication</span>
+        <span id="chipTotal">0 drugs</span>
+      </div>
+      <div class="sum-chip red">
+        <span class="material-icons">warning</span>
+        <span id="chipLow">0 low stock</span>
+      </div>
+      <div class="sum-chip yellow">
+        <span class="material-icons">schedule</span>
+        <span id="chipExp">0 expiring</span>
+      </div>
+    </div>
+
+    <!-- Two column layout on desktop -->
+    <div class="two-col">
+      <!-- Drug list -->
+      <div id="drugList"></div>
+
+      <!-- Desktop inline form panel -->
+      <div class="content-card desktop-form-panel" id="desktopFormPanel" style="display:none;">
+        <div class="content-card-header">
+          <span class="content-card-title" id="desktopFormTitle">Add new drug</span>
+          <button class="icon-btn" onclick="closeDesktopForm()" aria-label="Close">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="content-card-body">
+          <input type="hidden" id="editId">
+          <div class="input-group">
+            <label class="input-label">Drug name</label>
+            <input class="input-field" type="text" id="fName" placeholder="e.g. Amoxicillin 500mg">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Category</label>
+            <select class="input-field" id="fCategory">
+              <option value="">Select category…</option>
+              <option>Antibiotic</option>
+              <option>Painkiller</option>
+              <option>Antihypertensive</option>
+              <option>Antidiabetic</option>
+              <option>Antifungal</option>
+              <option>Supplement</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label class="input-label">Quantity</label>
+              <input class="input-field" type="number" id="fStock" placeholder="0" min="0">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Unit price (GH₵)</label>
+              <input class="input-field" type="number" id="fPrice" placeholder="0.00" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Expiry date</label>
+            <input class="input-field" type="date" id="fExpiry">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Supplier</label>
+            <input class="input-field" type="text" id="fSupplier" placeholder="Supplier name">
+          </div>
+          <div class="error-msg" id="sheetError" style="display:none;margin-bottom:8px;">
+            <span class="material-icons">error_outline</span>
+            <span id="sheetErrorText">Please fill all required fields</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-success" onclick="saveDrug()">
+              <span class="material-icons">check</span>
+              <span id="saveBtnTxt">Save drug</span>
+            </button>
+            <button class="btn btn-outline" style="width:auto;padding:0 20px;" onclick="closeDesktopForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAB (mobile only) -->
+  <button class="fab mobile-only" onclick="openSheet()" aria-label="Add new drug">
+    <span class="material-icons">add</span>
+  </button>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a class="nav-tab" data-page="dashboard" href="../dashboard/">
+      <div class="nav-pill"><span class="material-icons">home</span></div>
+      <span class="nav-tab-label">Home</span>
+    </a>
+    <a class="nav-tab active" data-page="inventory" href="../inventory/">
+      <div class="nav-pill"><span class="material-icons">inventory_2</span></div>
+      <span class="nav-tab-label">Inventory</span>
+    </a>
+    <a class="nav-tab" data-page="sales" href="../sales/">
+      <div class="nav-pill"><span class="material-icons">point_of_sale</span></div>
+      <span class="nav-tab-label">Sales</span>
+    </a>
+    <a class="nav-tab" data-page="reports" href="../reports/">
+      <div class="nav-pill"><span class="material-icons">bar_chart</span></div>
+      <span class="nav-tab-label">Reports</span>
+    </a>
+    <a class="nav-tab" data-page="prescriptions" href="../prescriptions/">
+      <div class="nav-pill"><span class="material-icons">more_horiz</span></div>
+      <span class="nav-tab-label">More</span>
+    </a>
+  </nav>
+
+</div>
+
+<!-- Mobile overlay + bottom sheet -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="drugSheet">
+  <div class="sheet-handle" onclick="closeSheet()"><div></div></div>
+  <div class="sheet-title" id="sheetTitle">Add new drug</div>
+  <div class="sheet-body">
+    <input type="hidden" id="mEditId">
+    <div class="input-group">
+      <label class="input-label">Drug name</label>
+      <input class="input-field" type="text" id="mfName" placeholder="e.g. Amoxicillin 500mg">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Category</label>
+      <select class="input-field" id="mfCategory">
+        <option value="">Select category…</option>
+        <option>Antibiotic</option>
+        <option>Painkiller</option>
+        <option>Antihypertensive</option>
+        <option>Antidiabetic</option>
+        <option>Antifungal</option>
+        <option>Supplement</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <div class="input-group">
+        <label class="input-label">Quantity</label>
+        <input class="input-field" type="number" id="mfStock" placeholder="0" min="0">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Unit price (GH₵)</label>
+        <input class="input-field" type="number" id="mfPrice" placeholder="0.00" step="0.01" min="0">
+      </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Expiry date</label>
+      <input class="input-field" type="date" id="mfExpiry">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Supplier</label>
+      <input class="input-field" type="text" id="mfSupplier" placeholder="Supplier name">
+    </div>
+    <div class="error-msg" id="mSheetError" style="display:none;margin-bottom:8px;">
+      <span class="material-icons">error_outline</span>
+      <span id="mSheetErrorText">Please fill all required fields</span>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn btn-success" onclick="saveMobileDrug()">
+      <span class="material-icons">check</span>
+      <span id="mSaveBtnTxt">Save drug</span>
+    </button>
+    <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- Delete confirm -->
+<div class="confirm-dialog" id="confirmDialog">
+  <div class="confirm-card">
+    <div class="confirm-title">Delete drug?</div>
+    <div class="confirm-body" id="confirmBody">This will permanently remove this drug.</div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-delete" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span class="material-icons" id="snack-icon">check_circle</span>
+  <span id="snack-msg"></span>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/screens/inventory.js"></script>
+</body>
+</html>

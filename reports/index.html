@@ -1,0 +1,128 @@
+<!-- ============================================================
+   FILE: reports/index.html
+   SCREEN: Reports Screen
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare — Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/screens/reports.css">
+</head>
+<body>
+<div class="phone-frame">
+
+  <nav class="top-nav" id="topNav"></nav>
+
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a class="icon-btn" href="../dashboard/" aria-label="Back">
+        <span class="material-icons">arrow_back</span>
+      </a>
+      <span class="top-bar-title">Reports</span>
+    </div>
+    <div class="top-bar-actions">
+      <button class="icon-btn" aria-label="Print" onclick="window.print()">
+        <span class="material-icons">print</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="screen-body">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">Reports</div>
+        <div class="page-subtitle">Generate and export pharmacy reports</div>
+      </div>
+      <button class="icon-btn" onclick="window.print()" title="Print">
+        <span class="material-icons">print</span>
+      </button>
+    </div>
+
+    <!-- Filter card -->
+    <div class="filter-card">
+      <div class="input-row" style="margin-bottom:12px;">
+        <div class="input-group">
+          <label class="input-label">From date</label>
+          <input class="input-field" type="date" id="fromDate">
+        </div>
+        <div class="input-group">
+          <label class="input-label">To date</label>
+          <input class="input-field" type="date" id="toDate">
+        </div>
+      </div>
+
+      <div class="report-type-tabs">
+        <button class="report-type-tab active" id="rtype-sales"   onclick="selectType('sales')">Sales Summary</button>
+        <button class="report-type-tab"        id="rtype-stock"   onclick="selectType('stock')">Low Stock</button>
+        <button class="report-type-tab"        id="rtype-expired" onclick="selectType('expired')">Expired Drugs</button>
+      </div>
+
+      <button class="btn btn-primary" id="generateBtn" onclick="generateReport()">
+        <span class="material-icons" id="generateIcon">bar_chart</span>
+        <span id="generateTxt">Generate report</span>
+      </button>
+    </div>
+
+    <!-- Result -->
+    <div id="reportResult" style="display:none;">
+      <div class="result-card">
+        <div class="result-card-header">
+          <div class="result-card-title" id="resultTitle"></div>
+          <div class="result-card-sub"   id="resultSub"></div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-bars" id="chartBars"></div>
+        </div>
+        <div class="report-table-wrap">
+          <table class="report-table">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-tab" data-page="dashboard" href="../dashboard/">
+      <div class="nav-pill"><span class="material-icons">home</span></div>
+      <span class="nav-tab-label">Home</span>
+    </a>
+    <a class="nav-tab" data-page="inventory" href="../inventory/">
+      <div class="nav-pill"><span class="material-icons">inventory_2</span></div>
+      <span class="nav-tab-label">Inventory</span>
+    </a>
+    <a class="nav-tab" data-page="sales" href="../sales/">
+      <div class="nav-pill"><span class="material-icons">point_of_sale</span></div>
+      <span class="nav-tab-label">Sales</span>
+    </a>
+    <a class="nav-tab active" data-page="reports" href="../reports/">
+      <div class="nav-pill"><span class="material-icons">bar_chart</span></div>
+      <span class="nav-tab-label">Reports</span>
+    </a>
+    <a class="nav-tab" data-page="prescriptions" href="../prescriptions/">
+      <div class="nav-pill"><span class="material-icons">more_horiz</span></div>
+      <span class="nav-tab-label">More</span>
+    </a>
+  </nav>
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span class="material-icons" id="snack-icon">check_circle</span>
+  <span id="snack-msg"></span>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/screens/reports.js"></script>
+</body>
+</html>

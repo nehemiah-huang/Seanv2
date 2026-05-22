@@ -1,0 +1,158 @@
+/* FILE: css/screens/dashboard.css | SCREEN: Dashboard */
+/* ============================================================
+   MEDCARE PMS — DASHBOARD SCREEN STYLES
+   ============================================================ */
+
+/* ── App bar brand ───────────────────────────────────────── */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-logo .material-icons {
+  font-size: 26px;
+  color: var(--brand);
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ── Avatar button ───────────────────────────────────────── */
+.avatar-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.role-chip {
+  position: absolute;
+  right: 0;
+  top: 42px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  z-index: 30;
+  display: none;
+}
+
+.role-chip.show { display: block; }
+
+/* ── Greeting ────────────────────────────────────────────── */
+.greeting-section {
+  padding: 16px 0 8px;
+}
+
+.greeting-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.greeting-date {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+/* ── KPI icon colors ─────────────────────────────────────── */
+.kpi-icon.blue   { background: var(--brand-bg-solid); }
+.kpi-icon.blue .material-icons   { color: var(--brand); }
+.kpi-icon.red    { background: var(--error-bg); }
+.kpi-icon.red .material-icons    { color: var(--error); }
+.kpi-icon.yellow { background: var(--warn-bg); }
+.kpi-icon.yellow .material-icons { color: var(--warn); }
+.kpi-icon.green  { background: var(--success-bg); }
+.kpi-icon.green .material-icons  { color: var(--success); }
+
+/* ── Nav cards grid ──────────────────────────────────────── */
+.nav-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.nav-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 0.5px solid var(--border);
+  padding: 16px;
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: var(--card-shadow);
+}
+
+.nav-card:hover {
+  background: var(--bg-input);
+  transform: scale(0.98);
+}
+
+.nav-card.disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.nav-card.disabled:hover {
+  transform: none;
+  background: var(--bg-card);
+}
+
+.nav-card .material-icons {
+  font-size: 28px;
+  color: var(--brand);
+  margin-bottom: 8px;
+}
+
+.nav-card.disabled .material-icons {
+  color: var(--text-hint);
+}
+
+.nav-card-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.nav-card-arrow {
+  position: absolute;
+  bottom: 14px;
+  right: 10px;
+  font-size: 16px !important;
+  color: var(--border-input) !important;
+  margin-bottom: 0 !important;
+}
+
+.nav-card-soon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}

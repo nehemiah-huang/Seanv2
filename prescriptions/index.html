@@ -1,0 +1,158 @@
+<!-- ============================================================
+   FILE: prescriptions/index.html
+   SCREEN: Prescriptions Screen
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare — Prescriptions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/screens/prescriptions.css">
+</head>
+<body>
+<div class="phone-frame">
+
+  <nav class="top-nav" id="topNav"></nav>
+
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a class="icon-btn" href="../dashboard/" aria-label="Back">
+        <span class="material-icons">arrow_back</span>
+      </a>
+      <span class="top-bar-title">Prescriptions</span>
+    </div>
+  </div>
+
+  <!-- Screen tabs -->
+  <div class="screen-tabs">
+    <button class="screen-tab active" id="tab-new" onclick="switchTab('new')">New Prescription</button>
+    <button class="screen-tab" id="tab-history" onclick="switchTab('history')">History</button>
+  </div>
+
+  <!-- NEW PRESCRIPTION TAB -->
+  <div class="screen-body" id="panelNew">
+    <div class="page-header">
+      <div>
+        <div class="page-title">New Prescription</div>
+        <div class="page-subtitle">Fill in patient and drug details</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Patient info -->
+      <div>
+        <div class="section-label">Patient information</div>
+        <div class="input-row">
+          <div class="input-group" style="flex:2;">
+            <label class="input-label">Patient name *</label>
+            <input class="input-field" type="text" id="fPatient" placeholder="Full name">
+          </div>
+          <div class="input-group" style="flex:1;">
+            <label class="input-label">Age</label>
+            <input class="input-field" type="number" id="fAge" placeholder="0" min="0">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Prescriber / Doctor</label>
+          <input class="input-field" type="text" id="fDoctor" placeholder="Dr. name">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Diagnosis</label>
+          <input class="input-field" type="text" id="fDiagnosis" placeholder="e.g. Hypertension">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Notes</label>
+          <textarea class="input-field" id="fNotes" rows="3" placeholder="Additional notes…"></textarea>
+        </div>
+      </div>
+
+      <!-- Drugs -->
+      <div>
+        <div class="section-label">Prescribed drugs</div>
+
+        <div class="dup-warning" id="dupWarning" style="display:none;">
+          <span class="material-icons">warning</span>
+          <span id="dupMsg">This drug is already on this prescription.</span>
+        </div>
+
+        <div class="drug-chip-list" id="drugChipList"></div>
+
+        <div class="drug-add-row">
+          <div class="input-group">
+            <label class="input-label">Drug</label>
+            <select class="input-field" id="fDrug">
+              <option value="">Select drug…</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Dosage</label>
+            <input class="input-field" type="text" id="fDosage" placeholder="e.g. 2×daily">
+          </div>
+          <button class="add-drug-btn" onclick="addDrug()" aria-label="Add drug">
+            <span class="material-icons">add</span>
+          </button>
+        </div>
+
+        <div class="error-msg" id="rxError" style="display:none;margin-top:8px;">
+          <span class="material-icons">error_outline</span>
+          <span id="rxErrorText">Please add at least one drug</span>
+        </div>
+
+        <button class="btn btn-success mt-16" onclick="saveRx()">
+          <span class="material-icons">task_alt</span> Save prescription
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="screen-body" id="panelHistory" style="display:none;">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Prescription History</div>
+        <div class="page-subtitle">All saved prescriptions</div>
+      </div>
+    </div>
+    <div id="rxHistoryList"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-tab" data-page="dashboard" href="../dashboard/">
+      <div class="nav-pill"><span class="material-icons">home</span></div>
+      <span class="nav-tab-label">Home</span>
+    </a>
+    <a class="nav-tab" data-page="inventory" href="../inventory/">
+      <div class="nav-pill"><span class="material-icons">inventory_2</span></div>
+      <span class="nav-tab-label">Inventory</span>
+    </a>
+    <a class="nav-tab" data-page="sales" href="../sales/">
+      <div class="nav-pill"><span class="material-icons">point_of_sale</span></div>
+      <span class="nav-tab-label">Sales</span>
+    </a>
+    <a class="nav-tab" data-page="reports" href="../reports/">
+      <div class="nav-pill"><span class="material-icons">bar_chart</span></div>
+      <span class="nav-tab-label">Reports</span>
+    </a>
+    <a class="nav-tab active" data-page="prescriptions" href="../prescriptions/">
+      <div class="nav-pill"><span class="material-icons">more_horiz</span></div>
+      <span class="nav-tab-label">More</span>
+    </a>
+  </nav>
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span class="material-icons" id="snack-icon">check_circle</span>
+  <span id="snack-msg"></span>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/screens/prescriptions.js"></script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+/* FILE: css/screens/inventory.css | SCREEN: Inventory */
+
+/* ── Summary chips ───────────────────────────────────────── */
+.summary-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sum-chip {
+  flex: 1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sum-chip .material-icons { font-size: 16px; }
+
+.sum-chip.blue   { background: var(--brand-bg-solid); color: var(--brand); }
+.sum-chip.red    { background: var(--error-bg);        color: #C62828; }
+.sum-chip.yellow { background: var(--warn-bg);          color: #F57F17; }
+
+[data-theme="dark"] .sum-chip.red    { color: #ef9a9a; }
+[data-theme="dark"] .sum-chip.yellow { color: #ffe082; }
+
+/* ── Drug card ───────────────────────────────────────────── */
+.drug-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 0.5px solid var(--border);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.drug-card-body {
+  padding: 12px 12px 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.drug-left { flex: 1; min-width: 0; }
+
+.drug-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drug-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.drug-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.drug-price {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.drug-actions { display: flex; gap: 4px; }
+
+.act-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  transition: background var(--transition);
+}
+
+.act-btn .material-icons { font-size: 18px; }
+
+.act-btn.edit .material-icons  { color: var(--brand); }
+.act-btn.del  .material-icons  { color: var(--error); }
+
+.act-btn.edit:hover { background: var(--brand-bg); }
+.act-btn.del:hover  { background: var(--error-bg); }
+
+/* ── Badge row ───────────────────────────────────────────── */
+.badge-row {
+  padding: 0 12px 10px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ── FAB ─────────────────────────────────────────────────── */
+.fab {
+  position: fixed;
+  right: calc(50% - 184px);
+  bottom: calc(var(--nav-height) + 16px);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--green);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 15;
+  transition: background var(--transition), transform var(--transition);
+  outline: none;
+}
+
+.fab:hover  { background: var(--green-dark); }
+.fab:active { transform: scale(0.94); }
+.fab .material-icons { font-size: 26px; color: #fff; }
+
+/* ── Delete confirm dialog ───────────────────────────────── */
+.confirm-dialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.confirm-dialog.show { display: flex; }
+
+.confirm-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 320px;
+  border: 0.5px solid var(--border);
+}
+
+.confirm-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.confirm-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.confirm-cancel {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 19px;
+  border: 1.5px solid var(--border-input);
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.confirm-delete {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 19px;
+  border: none;
+  background: var(--error);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ── Responsive FAB for wide screens ─────────────────────── */
+@media (max-width: 400px) {
+  .fab { right: 16px; }
+}

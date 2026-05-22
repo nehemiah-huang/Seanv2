@@ -1,0 +1,148 @@
+/* FILE: css/screens/login.css | SCREEN: Login */
+/* ============================================================
+   MEDCARE PMS — LOGIN SCREEN STYLES
+   ============================================================ */
+
+body {
+  background: #F0F4F8;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+[data-theme="dark"] body {
+  background: #0f1923;
+}
+
+.login-wrap {
+  width: 100%;
+  max-width: 380px;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 28px 20px 24px;
+  border: 0.5px solid var(--border);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+.login-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.logo-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--brand-bg-solid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.logo-circle .material-icons {
+  font-size: 36px;
+  color: var(--brand);
+}
+
+.login-app-name {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--brand);
+  margin-bottom: 4px;
+}
+
+.login-app-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.forgot-wrap {
+  text-align: right;
+  margin-top: -4px;
+  margin-bottom: 20px;
+}
+
+.forgot-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--brand);
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+}
+
+.forgot-link:hover { text-decoration: underline; }
+
+.login-divider {
+  height: 0.5px;
+  background: var(--border);
+  margin: 20px 0 16px;
+}
+
+.login-version {
+  font-size: 11px;
+  color: var(--text-hint);
+  text-align: center;
+}
+
+#snackbar { bottom: 24px !important; }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-backdrop.show { display: flex; }
+
+.modal-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 360px;
+  border: 0.5px solid var(--border);
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.modal-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.modal-actions { display: flex; justify-content: flex-end; }
+
+.modal-close {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 20px;
+  border: none;
+  background: var(--brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}

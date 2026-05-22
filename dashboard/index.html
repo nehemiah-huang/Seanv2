@@ -1,0 +1,122 @@
+<!-- ============================================================
+   FILE: dashboard/index.html
+   SCREEN: Dashboard Screen
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/screens/dashboard.css">
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- TOP NAV (tablet/desktop) -->
+  <nav class="top-nav" id="topNav"></nav>
+
+  <!-- MOBILE TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="brand-logo">
+        <span class="material-icons">medication</span>
+        <span class="brand-name">MedCare</span>
+      </div>
+    </div>
+    <div class="top-bar-actions" style="display:flex;align-items:center;gap:8px;">
+      <label class="theme-toggle" title="Toggle dark mode">
+        <input type="checkbox" id="mobileThemeToggle" onchange="handleThemeToggle(this)">
+        <span class="theme-toggle-slider"></span>
+      </label>
+      <div style="position:relative;">
+        <button class="avatar-btn" id="avatarBtn" onclick="toggleRoleChip()">A</button>
+        <div class="role-chip" id="roleChip">Role: Admin</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen body -->
+  <div class="screen-body">
+
+    <!-- Page header (desktop) -->
+    <div class="page-header">
+      <div>
+        <div class="page-title" id="greetTitle">Good morning</div>
+        <div class="page-subtitle" id="greetDate"></div>
+      </div>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon blue"><span class="material-icons">payments</span></div>
+        <div class="kpi-value" id="kpiSales">GH₵ 0.00</div>
+        <div class="kpi-label">Today's sales</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon red"><span class="material-icons">warning</span></div>
+        <div class="kpi-value" id="kpiLow">0</div>
+        <div class="kpi-label">Low stock items</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon yellow"><span class="material-icons">schedule</span></div>
+        <div class="kpi-value" id="kpiExp">0</div>
+        <div class="kpi-label">Expiring soon</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon green"><span class="material-icons">medication</span></div>
+        <div class="kpi-value" id="kpiTotal">0</div>
+        <div class="kpi-label">Total drugs</div>
+      </div>
+    </div>
+
+    <!-- Section label -->
+    <div class="section-label mt-16">Quick access</div>
+
+    <!-- Nav cards -->
+    <div class="nav-grid" id="navGrid"></div>
+
+  </div>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a class="nav-tab active" data-page="dashboard" href="../dashboard/">
+      <div class="nav-pill"><span class="material-icons">home</span></div>
+      <span class="nav-tab-label">Home</span>
+    </a>
+    <a class="nav-tab" data-page="inventory" href="../inventory/">
+      <div class="nav-pill"><span class="material-icons">inventory_2</span></div>
+      <span class="nav-tab-label">Inventory</span>
+    </a>
+    <a class="nav-tab" data-page="sales" href="../sales/">
+      <div class="nav-pill"><span class="material-icons">point_of_sale</span></div>
+      <span class="nav-tab-label">Sales</span>
+    </a>
+    <a class="nav-tab" data-page="reports" href="../reports/">
+      <div class="nav-pill"><span class="material-icons">bar_chart</span></div>
+      <span class="nav-tab-label">Reports</span>
+    </a>
+    <a class="nav-tab" data-page="prescriptions" href="../prescriptions/">
+      <div class="nav-pill"><span class="material-icons">more_horiz</span></div>
+      <span class="nav-tab-label">More</span>
+    </a>
+  </nav>
+
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span class="material-icons" id="snack-icon">check_circle</span>
+  <span id="snack-msg"></span>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/screens/dashboard.js"></script>
+</body>
+</html>
