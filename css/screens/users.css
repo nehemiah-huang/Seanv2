@@ -1,0 +1,59 @@
+/* FILE: css/screens/users.css | SCREEN: User Management */
+
+.user-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 0.5px solid var(--border);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.user-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.user-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+.role-badge-admin       { background: var(--brand-bg-solid); color: var(--brand); }
+.role-badge-pharmacist  { background: var(--success-bg);     color: var(--success); }
+.role-badge-attendant   { background: var(--warn-bg);         color: #F57F17; }
+
+.password-field-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field-wrap .input-field { padding-right: 44px; }
+
+.pw-toggle {
+  position: absolute;
+  right: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  outline: none;
+  border-radius: 50%;
+}
+.pw-toggle:hover { background: var(--brand-bg); }

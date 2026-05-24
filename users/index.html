@@ -1,0 +1,211 @@
+<!-- ============================================================
+   FILE: users/index.html
+   SCREEN: User Management Screen
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare — User Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/screens/users.css">
+</head>
+<body>
+<div class="phone-frame">
+
+  <nav class="top-nav" id="topNav"></nav>
+
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a class="icon-btn" href="../dashboard/" aria-label="Back">
+        <span class="material-icons">arrow_back</span>
+      </a>
+      <span class="top-bar-title">User Management</span>
+    </div>
+  </div>
+
+  <div class="screen-body">
+    <div class="page-header">
+      <div>
+        <div class="page-title">User Management</div>
+        <div class="page-subtitle">Manage system user accounts</div>
+      </div>
+      <button class="btn btn-primary" style="width:auto;padding:0 20px;" onclick="openSheet()">
+        <span class="material-icons">person_add</span> Add user
+      </button>
+    </div>
+
+    <div class="two-col">
+      <div id="userList"></div>
+
+      <!-- Desktop inline form -->
+      <div class="content-card" id="desktopForm" style="display:none;">
+        <div class="content-card-header">
+          <span class="content-card-title" id="desktopFormTitle">Add new user</span>
+          <button class="icon-btn" onclick="closeDesktopForm()">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="content-card-body">
+          <input type="hidden" id="editUserId">
+          <div class="input-group">
+            <label class="input-label">Full name *</label>
+            <input class="input-field" type="text" id="fName" placeholder="e.g. Ama Mensah">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Username *</label>
+            <input class="input-field" type="text" id="fUsername" placeholder="e.g. ama.mensah">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Role *</label>
+            <select class="input-field" id="fRole">
+              <option value="">Select role…</option>
+              <option value="Admin">Admin</option>
+              <option value="Pharmacist">Pharmacist</option>
+              <option value="Attendant">Attendant</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label" id="passwordLabel">Password *</label>
+            <div class="password-field-wrap">
+              <input class="input-field" type="password" id="fPassword" placeholder="Enter password">
+              <button class="pw-toggle" onclick="togglePw('fPassword','pwEye')" aria-label="Toggle password">
+                <span class="material-icons" id="pwEye">visibility</span>
+              </button>
+            </div>
+          </div>
+          <div class="error-msg" id="formError" style="display:none;margin-bottom:8px;">
+            <span class="material-icons">error_outline</span>
+            <span id="formErrorText"></span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-primary" onclick="saveUser()">
+              <span class="material-icons">check</span>
+              <span id="saveBtnTxt">Save user</span>
+            </button>
+            <button class="btn btn-outline" style="width:auto;padding:0 20px;" onclick="closeDesktopForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-tab" data-page="dashboard" href="../dashboard/">
+      <div class="nav-pill"><span class="material-icons">home</span></div>
+      <span class="nav-tab-label">Home</span>
+    </a>
+    <a class="nav-tab" data-page="inventory" href="../inventory/">
+      <div class="nav-pill"><span class="material-icons">inventory_2</span></div>
+      <span class="nav-tab-label">Inventory</span>
+    </a>
+    <a class="nav-tab" data-page="sales" href="../sales/">
+      <div class="nav-pill"><span class="material-icons">point_of_sale</span></div>
+      <span class="nav-tab-label">Sales</span>
+    </a>
+    <a class="nav-tab" data-page="reports" href="../reports/">
+      <div class="nav-pill"><span class="material-icons">bar_chart</span></div>
+      <span class="nav-tab-label">Reports</span>
+    </a>
+    <a class="nav-tab active" data-page="users" href="../users/">
+      <div class="nav-pill"><span class="material-icons">more_horiz</span></div>
+      <span class="nav-tab-label">More</span>
+    </a>
+  </nav>
+</div>
+
+<!-- Mobile overlay + sheet -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="userSheet">
+  <div class="sheet-handle" onclick="closeSheet()"><div></div></div>
+  <div class="sheet-title" id="sheetTitle">Add new user</div>
+  <div class="sheet-body">
+    <input type="hidden" id="mEditUserId">
+    <div class="input-group">
+      <label class="input-label">Full name *</label>
+      <input class="input-field" type="text" id="mfName" placeholder="e.g. Ama Mensah">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Username *</label>
+      <input class="input-field" type="text" id="mfUsername" placeholder="e.g. ama.mensah">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Role *</label>
+      <select class="input-field" id="mfRole">
+        <option value="">Select role…</option>
+        <option value="Admin">Admin</option>
+        <option value="Pharmacist">Pharmacist</option>
+        <option value="Attendant">Attendant</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label class="input-label" id="mPasswordLabel">Password *</label>
+      <div class="password-field-wrap">
+        <input class="input-field" type="password" id="mfPassword" placeholder="Enter password">
+        <button class="pw-toggle" onclick="togglePw('mfPassword','mPwEye')" aria-label="Toggle">
+          <span class="material-icons" id="mPwEye">visibility</span>
+        </button>
+      </div>
+    </div>
+    <div class="error-msg" id="mFormError" style="display:none;margin-bottom:8px;">
+      <span class="material-icons">error_outline</span>
+      <span id="mFormErrorText"></span>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn btn-primary" onclick="saveMobileUser()">
+      <span class="material-icons">check</span>
+      <span id="mSaveBtnTxt">Save user</span>
+    </button>
+    <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- Delete confirm -->
+<div class="confirm-dialog" id="confirmDialog">
+  <div class="confirm-card">
+    <div class="confirm-title">Delete user?</div>
+    <div class="confirm-body" id="confirmBody">This will permanently remove this user.</div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-delete" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset password confirm -->
+<div class="confirm-dialog" id="resetDialog">
+  <div class="confirm-card">
+    <div class="confirm-title">Reset password?</div>
+    <div class="confirm-body" id="resetBody">A new password will be set for this user.</div>
+    <div class="input-group" style="margin-top:12px;">
+      <label class="input-label">New password</label>
+      <div class="password-field-wrap">
+        <input class="input-field" type="password" id="newPassword" placeholder="Enter new password">
+        <button class="pw-toggle" onclick="togglePw('newPassword','resetEye')" aria-label="Toggle">
+          <span class="material-icons" id="resetEye">visibility</span>
+        </button>
+      </div>
+    </div>
+    <div class="confirm-actions" style="margin-top:12px;">
+      <button class="confirm-cancel" onclick="closeReset()">Cancel</button>
+      <button class="confirm-delete" style="background:var(--brand);" onclick="confirmReset()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span class="material-icons" id="snack-icon">check_circle</span>
+  <span id="snack-msg"></span>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/screens/users.js"></script>
+</body>
+</html>

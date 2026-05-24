@@ -1,0 +1,141 @@
+<!-- ============================================================
+   FILE: audit/index.html
+   SCREEN: Audit Log Screen
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare — Audit Log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/screens/audit.css">
+</head>
+<body>
+<div class="phone-frame">
+
+  <nav class="top-nav" id="topNav"></nav>
+
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a class="icon-btn" href="../dashboard/" aria-label="Back">
+        <span class="material-icons">arrow_back</span>
+      </a>
+      <span class="top-bar-title">Audit Log</span>
+    </div>
+  </div>
+
+  <div class="screen-body">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">Audit Log</div>
+        <div class="page-subtitle">System activity tracking</div>
+      </div>
+      <button class="export-btn" onclick="exportCSV()">
+        <span class="material-icons">download</span> Export CSV
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="audit-filters">
+      <div class="input-group">
+        <label class="input-label">From date</label>
+        <input class="input-field" type="date" id="filterFrom">
+      </div>
+      <div class="input-group">
+        <label class="input-label">To date</label>
+        <input class="input-field" type="date" id="filterTo">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Action type</label>
+        <select class="input-field" id="filterAction">
+          <option value="">All actions</option>
+          <option value="LOGIN">Login</option>
+          <option value="LOGOUT">Logout</option>
+          <option value="DRUG_ADDED">Drug Added</option>
+          <option value="DRUG_UPDATED">Drug Updated</option>
+          <option value="DRUG_DELETED">Drug Deleted</option>
+          <option value="SALE_COMPLETED">Sale Completed</option>
+          <option value="PRESCRIPTION_SAVED">Prescription Saved</option>
+          <option value="USER_CREATED">User Created</option>
+          <option value="USER_UPDATED">User Updated</option>
+          <option value="USER_DELETED">User Deleted</option>
+          <option value="PASSWORD_RESET">Password Reset</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">User</label>
+        <input class="input-field" type="text" id="filterUser" placeholder="Filter by user…">
+      </div>
+      <div style="display:flex;gap:8px;align-self:flex-end;">
+        <button class="btn btn-primary" style="height:46px;width:auto;padding:0 20px;" onclick="applyFilters()">
+          <span class="material-icons">filter_list</span> Filter
+        </button>
+        <button class="btn btn-outline" style="height:46px;width:auto;padding:0 16px;" onclick="clearFilters()">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Results count -->
+    <div class="text-xs text-hint mb-12" id="resultCount"></div>
+
+    <!-- Table -->
+    <div class="audit-table-wrap">
+      <div style="overflow-x:auto;">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Date &amp; Time</th>
+              <th>Action</th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-tab" data-page="dashboard" href="../dashboard/">
+      <div class="nav-pill"><span class="material-icons">home</span></div>
+      <span class="nav-tab-label">Home</span>
+    </a>
+    <a class="nav-tab" data-page="inventory" href="../inventory/">
+      <div class="nav-pill"><span class="material-icons">inventory_2</span></div>
+      <span class="nav-tab-label">Inventory</span>
+    </a>
+    <a class="nav-tab" data-page="sales" href="../sales/">
+      <div class="nav-pill"><span class="material-icons">point_of_sale</span></div>
+      <span class="nav-tab-label">Sales</span>
+    </a>
+    <a class="nav-tab" data-page="reports" href="../reports/">
+      <div class="nav-pill"><span class="material-icons">bar_chart</span></div>
+      <span class="nav-tab-label">Reports</span>
+    </a>
+    <a class="nav-tab active" data-page="audit" href="../audit/">
+      <div class="nav-pill"><span class="material-icons">more_horiz</span></div>
+      <span class="nav-tab-label">More</span>
+    </a>
+  </nav>
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span class="material-icons" id="snack-icon">check_circle</span>
+  <span id="snack-msg"></span>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/nav.js"></script>
+<script src="../js/screens/audit.js"></script>
+</body>
+</html>
