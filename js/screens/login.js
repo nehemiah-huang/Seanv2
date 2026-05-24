@@ -28,6 +28,7 @@ function doLogin() {
     setLoading(false);
 
     if (result.success) {
+      Storage.addAuditEntry('LOGIN', `${result.user.name} logged in`);
       Utils.showSnackbar(`Welcome back, ${result.user.name}!`, 'success');
       setTimeout(() => { window.location.href = '../dashboard/'; }, 1200);
     } else {

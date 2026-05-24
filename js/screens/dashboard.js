@@ -5,8 +5,8 @@ const NAV_CARDS = [
   { id:'sales',         label:'Sales',           icon:'point_of_sale',  href:'../sales/',         active:true  },
   { id:'prescriptions', label:'Prescriptions',   icon:'medication',     href:'../prescriptions/', active:true  },
   { id:'reports',       label:'Reports',         icon:'bar_chart',      href:'../reports/',       active:true  },
-  { id:'users',         label:'User Management', icon:'manage_accounts',href:'#',                 active:false },
-  { id:'audit',         label:'Audit Log',       icon:'history',        href:'#',                 active:false },
+  { id:'users',         label:'User Management', icon:'manage_accounts',href:'../users/',                 active:true },
+  { id:'audit',         label:'Audit Log',       icon:'history',        href:'../audit/',                 active:true },
 ];
 
 document.addEventListener('DOMContentLoaded', () => {

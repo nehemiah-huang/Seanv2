@@ -199,7 +199,7 @@ function completeSale() {
     paymentMethod: payMethod,
     cashier: session.name,
   });
-
+  Storage.addAuditEntry('SALE_COMPLETED', `Sale completed — ${Utils.formatCurrency(grand)} via ${PAY_LABELS[payMethod]}`);
   // Build receipt
   const now = new Date();
   document.getElementById('receiptDate').textContent    = Utils.formatDateTime(now.toISOString());

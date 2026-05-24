@@ -177,8 +177,16 @@ function saveDrug() {
   }
 
   const drug = { name, category, stock, price, expiry, supplier };
-  if (editId) { drug.id = editId; Storage.updateDrug(drug); Utils.showSnackbar('Drug updated', 'success'); }
-  else        { Storage.addDrug(drug); Utils.showSnackbar('Drug added', 'success'); }
+  if (editId) {
+    drug.id = editId;
+    Storage.updateDrug(drug);
+    Storage.addAuditEntry('DRUG_UPDATED', `Updated drug: ${drug.name}`);
+    Utils.showSnackbar('Drug updated', 'success');
+  } else {
+    Storage.addDrug(drug);
+    Storage.addAuditEntry('DRUG_ADDED', `Added drug: ${drug.name}`);
+    Utils.showSnackbar('Drug added', 'success');
+  }
 
   closeDesktopForm();
   renderList();
@@ -219,11 +227,18 @@ function saveMobileDrug() {
   }
 
   const drug = { name, category, stock, price, expiry, supplier };
-  if (editId) { drug.id = editId; Storage.updateDrug(drug); Utils.showSnackbar('Drug updated', 'success'); }
-  else        { Storage.addDrug(drug); Utils.showSnackbar('Drug added', 'success'); }
-
-  closeSheet();
-  renderList();
+    if (editId) {
+      drug.id = editId;
+      Storage.updateDrug(drug);
+      Storage.addAuditEntry('DRUG_UPDATED', `Updated drug: ${drug.name}`);
+      Utils.showSnackbar('Drug updated', 'success');
+    } else {
+      Storage.addDrug(drug);
+      Storage.addAuditEntry('DRUG_ADDED', `Added drug: ${drug.name}`);
+      Utils.showSnackbar('Drug added', 'success');
+    }
+    closeSheet();
+    renderList();
 }
 
 // ── Delete ────────────────────────────────────────────────
@@ -241,6 +256,7 @@ function closeConfirm() {
 function confirmDelete() {
   if (!deleteTargetId) return;
   Storage.deleteDrug(deleteTargetId);
+  Storage.addAuditEntry('DRUG_DELETED', `Deleted drug ID: ${deleteTargetId}`);
   closeConfirm();
   closeDesktopForm();
   renderList();

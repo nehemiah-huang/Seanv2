@@ -96,6 +96,7 @@ function saveRx() {
   prescribedDrugs = [];
   renderChips();
 
+  Storage.addAuditEntry('PRESCRIPTION_SAVED', `Prescription saved for ${patient}`);
   Utils.showSnackbar('Prescription saved successfully', 'success');
   setTimeout(() => switchTab('history'), 1000);
 }

@@ -3,11 +3,13 @@
 const Nav = (() => {
 
   const LINKS = [
-    { id:'dashboard',     label:'Dashboard',    icon:'home',          href:'../dashboard/'     },
-    { id:'inventory',     label:'Inventory',    icon:'inventory_2',   href:'../inventory/'     },
-    { id:'sales',         label:'Sales',         icon:'point_of_sale', href:'../sales/'         },
-    { id:'prescriptions', label:'Prescriptions', icon:'medication',    href:'../prescriptions/' },
-    { id:'reports',       label:'Reports',       icon:'bar_chart',     href:'../reports/'       },
+    { id:'dashboard',     label:'Dashboard',    icon:'home',           href:'../dashboard/'     },
+    { id:'inventory',     label:'Inventory',    icon:'inventory_2',    href:'../inventory/'     },
+    { id:'sales',         label:'Sales',        icon:'point_of_sale',  href:'../sales/'         },
+    { id:'prescriptions', label:'Prescriptions',icon:'medication',     href:'../prescriptions/' },
+    { id:'reports',       label:'Reports',      icon:'bar_chart',      href:'../reports/'       },
+    { id:'users',         label:'Users',        icon:'manage_accounts',href:'../users/'         },
+    { id:'audit',         label:'Audit Log',    icon:'history',        href:'../audit/'         },
   ];
 
   function render(activePage) {
@@ -51,7 +53,7 @@ const Nav = (() => {
             ${session.name} &middot; ${session.role}
           </div>
         </div>
-        <button class="icon-btn" onclick="Auth.logout()" title="Logout" aria-label="Logout">
+        <button class="icon-btn" onclick="handleLogout()" title="Logout" aria-label="Logout">
           <span class="material-icons">logout</span>
         </button>
       </div>
@@ -85,4 +87,9 @@ function handleThemeToggle(checkbox) {
 
 function toggleRoleChip() {
   document.getElementById('roleChip').classList.toggle('show');
+}
+
+function handleLogout() {
+  Storage.addAuditEntry('LOGOUT', 'User logged out');
+  Auth.logout();
 }

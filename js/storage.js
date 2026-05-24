@@ -12,6 +12,8 @@ const Storage = (() => {
     SALES:         'medcare_sales',
     PRESCRIPTIONS: 'medcare_prescriptions',
     THEME:         'medcare_theme',
+    AUDIT:         'medcare_audit',
+    USERS:         'medcare_users',
   };
 
   // ── Generic ──────────────────────────────────────────────
@@ -100,10 +102,61 @@ const Storage = (() => {
         { id:'3', name:'Lisinopril 10mg',    category:'Antihypertensive', stock:200, price:15.00, expiry:'2026-11-01', supplier:'HealthPlus' },
         { id:'4', name:'Metformin 500mg',    category:'Antidiabetic',     stock:7,   price:9.50,  expiry:'2026-05-28', supplier:'PharmaCo' },
         { id:'5', name:'Atorvastatin 20mg',  category:'Antihypertensive', stock:15,  price:22.00, expiry:'2026-06-10', supplier:'MediSupply' },
+        { id:'6', name: 'Paracetamol 500mg', category:'Painkiller',       stock:200, price:10.00, expiry:'2029-09-10', supplier:'Nene Ltd'} 
       ]);
-    }
+    };
+    if (getUsers().length === 0) {
+      setUsers([
+        { id:'u1', username:'admin',      password:'admin123',  role:'Admin',      name:'Admin'      },
+        { id:'u2', username:'pharmacist', password:'pharm123',  role:'Pharmacist', name:'Dr. Asante' },
+        { id:'u3', username:'attendant',  password:'attend123', role:'Attendant',  name:'Kofi'       },
+      ]);
+    };
+  }
+  // ── Audit Log ─────────────────────────────────────────────
+  function getAuditLog()     { return get(KEYS.AUDIT) || []; }
+  function setAuditLog(logs) { return set(KEYS.AUDIT, logs); }
+
+  function addAuditEntry(action, detail) {
+    const session = getSession();
+    const logs    = getAuditLog();
+    logs.unshift({
+      id:        Date.now().toString(),
+      action,
+      detail,
+      user:      session ? session.name     : 'System',
+      role:      session ? session.role     : '—',
+      timestamp: new Date().toISOString(),
+    });
+    // Keep last 500 entries
+    if (logs.length > 500) logs.splice(500);
+    return setAuditLog(logs);
   }
 
+  // ── Users ─────────────────────────────────────────────────
+  function getUsers()        { return get(KEYS.USERS) || []; }
+  function setUsers(users)   { return set(KEYS.USERS, users); }
+
+  function addUser(user) {
+    const users = getUsers();
+    user.id     = Date.now().toString();
+    users.push(user);
+    return setUsers(users);
+  }
+
+  function updateUser(updated) {
+    const users = getUsers().map(u => u.id === updated.id ? updated : u);
+    return setUsers(users);
+  }
+
+  function deleteUser(id) {
+    const users = getUsers().filter(u => u.id !== id);
+    return setUsers(users);
+  }
+
+  function getUserById(id) {
+    return getUsers().find(u => u.id === id) || null;
+  }
   return {
     // Session
     getSession, setSession, clearSession,
@@ -117,6 +170,10 @@ const Storage = (() => {
     getTheme, setTheme,
     // Seed
     seedIfEmpty,
+    // Audit
+    getAuditLog, addAuditEntry,
+    // Users
+    getUsers, addUser, updateUser, deleteUser, getUserById,
   };
 
 })();
