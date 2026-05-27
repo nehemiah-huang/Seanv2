@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
 // ── Drug search ───────────────────────────────────────────
 function handleDrugSearch(val) {
   const sug = document.getElementById('suggestions');

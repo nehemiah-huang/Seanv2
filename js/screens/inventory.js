@@ -101,25 +101,25 @@ function openSheet() {
   }
 }
 
-function openEdit(id) {
-  const drug = Storage.getDrugById(id);
-  if (!drug) return;
-  if (isDesktop()) {
-    openDesktopForm(drug);
-  } else {
-    clearMobileForm();
-    document.getElementById('sheetTitle').textContent  = 'Edit drug';
-    document.getElementById('mSaveBtnTxt').textContent = 'Update drug';
-    document.getElementById('mEditId').value    = drug.id;
-    document.getElementById('mfName').value     = drug.name;
-    document.getElementById('mfCategory').value = drug.category;
-    document.getElementById('mfStock').value    = drug.stock;
-    document.getElementById('mfPrice').value    = drug.price;
-    document.getElementById('mfExpiry').value   = drug.expiry;
-    document.getElementById('mfSupplier').value = drug.supplier || '';
-    showBottomSheet();
-  }
-}
+// function openEdit(id) {
+//   const drug = Storage.getDrugById(id);
+//   if (!drug) return;
+//   if (isDesktop()) {
+//     openDesktopForm(drug);
+//   } else {
+//     clearMobileForm();
+//     document.getElementById('sheetTitle').textContent  = 'Edit drug';
+//     document.getElementById('mSaveBtnTxt').textContent = 'Update drug';
+//     document.getElementById('mEditId').value    = drug.id;
+//     document.getElementById('mfName').value     = drug.name;
+//     document.getElementById('mfCategory').value = drug.category;
+//     document.getElementById('mfStock').value    = drug.stock;
+//     document.getElementById('mfPrice').value    = drug.price;
+//     document.getElementById('mfExpiry').value   = drug.expiry;
+//     document.getElementById('mfSupplier').value = drug.supplier || '';
+//     showBottomSheet();
+//   }
+// }
 
 // ── Desktop form ──────────────────────────────────────────
 function openDesktopForm(drug) {
