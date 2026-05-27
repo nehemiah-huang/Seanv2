@@ -1,20 +1,19 @@
 /* FILE: js/screens/dashboard.js | SCREEN: Dashboard */
 
 const NAV_CARDS = [
-  { id:'inventory',     label:'Inventory',      icon:'inventory_2',    href:'../inventory/',     active:true  },
-  { id:'sales',         label:'Sales',           icon:'point_of_sale',  href:'../sales/',         active:true  },
-  { id:'prescriptions', label:'Prescriptions',   icon:'medication',     href:'../prescriptions/', active:true  },
-  { id:'reports',       label:'Reports',         icon:'bar_chart',      href:'../reports/',       active:true  },
-  { id:'users',         label:'User Management', icon:'manage_accounts',href:'../users/',                 active:true },
-  { id:'audit',         label:'Audit Log',       icon:'history',        href:'../audit/',                 active:true },
+  { id:'inventory',     label:'Inventory',      icon:'inventory_2',    href:'/inventory/',     active:true },
+  { id:'sales',         label:'Sales',           icon:'point_of_sale',  href:'/sales/',         active:true },
+  { id:'prescriptions', label:'Prescriptions',   icon:'medication',     href:'/prescriptions/', active:true },
+  { id:'reports',       label:'Reports',         icon:'bar_chart',      href:'/reports/',       active:true },
+  { id:'users',         label:'User Management', icon:'manage_accounts',href:'/users/',         active:true },
+  { id:'audit',         label:'Audit Log',       icon:'history',        href:'/audit/',         active:true },
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (!Utils.requireAuth()) return;
-  Storage.seedIfEmpty();
+  if (!API.requireAuth()) return;
   Nav.render('dashboard');
 
-  const theme = Storage.getTheme();
+  const theme = Utils.initTheme();
   const mobileToggle = document.getElementById('mobileThemeToggle');
   if (mobileToggle) mobileToggle.checked = (theme === 'dark');
 
@@ -42,19 +41,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function loadKPIs() {
-  const drugs = Storage.getDrugs();
-  const sales = Storage.getSales();
-  const today = new Date().toDateString();
+async function loadKPIs() {
+  try {
+    const [drugs, sales] = await Promise.all([
+      API.getDrugs(),
+      API.getSales(),
+    ]);
 
-  const todayTotal = sales
-    .filter(s => new Date(s.timestamp).toDateString() === today)
-    .reduce((sum, s) => sum + (s.grandTotal || 0), 0);
+    const today = new Date().toDateString();
+    const todayTotal = sales
+      .filter(s => new Date(s.created_at).toDateString() === today)
+      .reduce((sum, s) => sum + parseFloat(s.grand_total || 0), 0);
 
-  document.getElementById('kpiSales').textContent = Utils.formatCurrency(todayTotal);
-  document.getElementById('kpiLow').textContent   = drugs.filter(d => Utils.isLowStock(d.stock)).length;
-  document.getElementById('kpiExp').textContent   = drugs.filter(d => Utils.daysUntilExpiry(d.expiry) <= 60).length;
-  document.getElementById('kpiTotal').textContent = drugs.length;
+    document.getElementById('kpiSales').textContent = Utils.formatCurrency(todayTotal);
+    document.getElementById('kpiLow').textContent   = drugs.filter(d => Utils.isLowStock(d.stock)).length;
+    document.getElementById('kpiExp').textContent   = drugs.filter(d => Utils.daysUntilExpiry(d.expiry) <= 60).length;
+    document.getElementById('kpiTotal').textContent = drugs.length;
+  } catch (err) {
+    console.error('Failed to load KPIs:', err);
+  }
 }
 
 function renderNavCards() {

@@ -1,56 +1,35 @@
 /* FILE: js/auth.js | Authentication and session management */
-/* ============================================================
-   MEDCARE PMS — AUTH HELPERS
-   Session management and role-based access
-   ============================================================ */
 
 const Auth = (() => {
 
-  // Mock users — replace with real API call in production
-  const USERS = [
-    { username: 'admin',      password: 'admin123',  role: 'Admin',       name: 'Admin' },
-    { username: 'pharmacist', password: 'pharm123',  role: 'Pharmacist',  name: 'Dr. Asante' },
-    { username: 'attendant',  password: 'attend123', role: 'Attendant',   name: 'Kofi',
-      username: 'Nehemiah', password: 'IamtheDarkSoul', role: 'Admin', name: 'TestingDev'
-     },
-  ];
-
   // Nav cards visible per role
-    const ROLE_NAV = {
-      Admin:      ['inventory', 'sales', 'prescriptions', 'reports', 'users', 'audit'],
-      Pharmacist: ['inventory', 'prescriptions', 'reports', 'users', 'audit'],
-      Attendant:  ['sales', 'inventory', 'prescriptions'],
-    };
+  const ROLE_NAV = {
+    Admin:      ['inventory', 'sales', 'prescriptions', 'reports', 'users', 'audit'],
+    Pharmacist: ['inventory', 'prescriptions', 'reports', 'users', 'audit'],
+    Attendant:  ['sales', 'inventory', 'prescriptions'],
+  };
 
   function login(username, password) {
-    const user = USERS.find(
-      u => u.username === username.trim().toLowerCase()
-        && u.password === password
-    );
-    if (user) {
-      Storage.setSession({ username: user.username, role: user.role, name: user.name });
-      return { success: true, user };
-    }
+    // Handled by API.login() in login.js
     return { success: false };
   }
 
   function logout() {
-    Storage.clearSession();
-    window.location.href = '../login/';
+    API.logout();
   }
 
   function getSession() {
-    return Storage.getSession();
+    return API.getUser();
   }
 
   function getRole() {
-    const s = Storage.getSession();
-    return s ? s.role : null;
+    const u = API.getUser();
+    return u ? u.role : null;
   }
 
   function getName() {
-    const s = Storage.getSession();
-    return s ? s.name : 'User';
+    const u = API.getUser();
+    return u ? u.name : 'User';
   }
 
   function canAccess(module) {

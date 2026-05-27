@@ -6,13 +6,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   Utils.initTheme();
   Storage.seedIfEmpty();
-  // If already logged in go to dashboard
-  if (Storage.getSession()) {
-    window.location.href = '../dashboard/';
-  }
-});
+  if (API.isLoggedIn()) {
+  window.location.href = '/dashboard/';
+}
+}); 
 
-function doLogin() {
+async function doLogin() {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
@@ -23,20 +22,16 @@ function doLogin() {
 
   setLoading(true);
 
-  setTimeout(() => {
-    const result = Auth.login(username, password);
+  try {
+    const result = await API.login(username, password);
+    Utils.showSnackbar(`Welcome back, ${result.user.name}!`, 'success');
+    setTimeout(() => { window.location.href = '/dashboard/'; }, 1200);
+  } catch (err) {
     setLoading(false);
-
-    if (result.success) {
-      Storage.addAuditEntry('LOGIN', `${result.user.name} logged in`);
-      Utils.showSnackbar(`Welcome back, ${result.user.name}!`, 'success');
-      setTimeout(() => { window.location.href = '../dashboard/'; }, 1200);
-    } else {
-      showError('Invalid username or password');
-      document.getElementById('username').classList.add('error');
-      document.getElementById('password').classList.add('error');
-    }
-  }, 900);
+    showError(err.message || 'Invalid username or password');
+    document.getElementById('username').classList.add('error');
+    document.getElementById('password').classList.add('error');
+  }
 }
 
 function setLoading(on) {

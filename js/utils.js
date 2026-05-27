@@ -117,7 +117,7 @@ const Utils = (() => {
       // Works from any subfolder depth
       const depth = window.location.pathname.split('/').filter(Boolean).length;
       const back  = depth > 1 ? '../'.repeat(depth - 1) : '';
-      window.location.href = back + 'login/';
+      window.location.href = '/login/';
       return false;
     }
     return true;

@@ -90,6 +90,5 @@ function toggleRoleChip() {
 }
 
 function handleLogout() {
-  Storage.addAuditEntry('LOGOUT', 'User logged out');
   Auth.logout();
 }

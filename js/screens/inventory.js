@@ -4,24 +4,21 @@ let deleteTargetId = null;
 let currentQuery   = '';
 let isDesktop      = () => window.innerWidth >= 768;
 
+
 document.addEventListener('DOMContentLoaded', () => {
-  if (!Utils.requireAuth()) return;
-  Storage.seedIfEmpty();
+  if (!API.requireAuth()) return;
   Nav.render('inventory');
 
-  // Sync mobile theme icon
-  const theme = Utils.getTheme ? Storage.getTheme() : 'light';
+  const theme = Utils.initTheme();
   updateThemeIcon(theme);
 
   renderList();
-
-  // Hide desktop form panel initially
   closeDesktopForm();
 });
 
 // ── Render drug list ──────────────────────────────────────
-function renderList() {
-  const drugs    = Storage.getDrugs();
+async function renderList() {
+  const drugs    = await API.getDrugs();
   const filtered = drugs.filter(d =>
     d.name.toLowerCase().includes(currentQuery.toLowerCase()) ||
     (d.category || '').toLowerCase().includes(currentQuery.toLowerCase())
@@ -41,7 +38,7 @@ function renderList() {
       <div class="empty-state">
         <div class="empty-icon"><span class="material-icons">medication</span></div>
         <p>${currentQuery ? 'No drugs found' : 'No drugs yet'}</p>
-        <span>${currentQuery ? 'Try a different search term' : 'Tap + to add your first drug'}</span>
+        <span>${currentQuery ? 'Try a different search term' : 'Click + to add your first drug'}</span>
       </div>`;
     return;
   }
@@ -65,10 +62,10 @@ function renderList() {
         <div class="drug-right">
           <div class="drug-price">${Utils.formatCurrency(drug.price)}</div>
           <div class="drug-actions">
-            <button class="act-btn edit" onclick="openEdit('${drug.id}')" aria-label="Edit">
+            <button class="act-btn edit" onclick="openEdit(${drug.id})" aria-label="Edit">
               <span class="material-icons">edit</span>
             </button>
-            <button class="act-btn del" onclick="openConfirm('${drug.id}','${drug.name.replace(/'/g,"\\'")}')">
+            <button class="act-btn del" onclick="openConfirm(${drug.id},'${drug.name.replace(/'/g,"\\'")}')">
               <span class="material-icons">delete</span>
             </button>
           </div>
@@ -161,7 +158,7 @@ function clearDesktopForm() {
   if (err) err.style.display = 'none';
 }
 
-function saveDrug() {
+async function saveDrug() {
   const name     = document.getElementById('fName').value.trim();
   const category = document.getElementById('fCategory').value;
   const stock    = parseInt(document.getElementById('fStock').value) || 0;
@@ -171,25 +168,25 @@ function saveDrug() {
   const editId   = document.getElementById('editId').value;
 
   if (!name || !category || !expiry) {
-    document.getElementById('sheetErrorText').textContent = 'Drug name, category and expiry date are required';
+    document.getElementById('sheetErrorText').textContent = 'Drug name, category and expiry are required';
     document.getElementById('sheetError').style.display = 'flex';
     return;
   }
 
-  const drug = { name, category, stock, price, expiry, supplier };
-  if (editId) {
-    drug.id = editId;
-    Storage.updateDrug(drug);
-    Storage.addAuditEntry('DRUG_UPDATED', `Updated drug: ${drug.name}`);
-    Utils.showSnackbar('Drug updated', 'success');
-  } else {
-    Storage.addDrug(drug);
-    Storage.addAuditEntry('DRUG_ADDED', `Added drug: ${drug.name}`);
-    Utils.showSnackbar('Drug added', 'success');
+  try {
+    if (editId) {
+      await API.updateDrug(editId, { name, category, stock, price, expiry, supplier });
+      Utils.showSnackbar('Drug updated', 'success');
+    } else {
+      await API.addDrug({ name, category, stock, price, expiry, supplier });
+      Utils.showSnackbar('Drug added', 'success');
+    }
+    closeDesktopForm();
+    renderList();
+  } catch (err) {
+    document.getElementById('sheetErrorText').textContent = err.message;
+    document.getElementById('sheetError').style.display = 'flex';
   }
-
-  closeDesktopForm();
-  renderList();
 }
 
 // ── Mobile bottom sheet ───────────────────────────────────
@@ -211,7 +208,7 @@ function clearMobileForm() {
   document.getElementById('mSheetError').style.display = 'none';
 }
 
-function saveMobileDrug() {
+async function saveMobileDrug() {
   const name     = document.getElementById('mfName').value.trim();
   const category = document.getElementById('mfCategory').value;
   const stock    = parseInt(document.getElementById('mfStock').value) || 0;
@@ -226,19 +223,20 @@ function saveMobileDrug() {
     return;
   }
 
-  const drug = { name, category, stock, price, expiry, supplier };
+  try {
     if (editId) {
-      drug.id = editId;
-      Storage.updateDrug(drug);
-      Storage.addAuditEntry('DRUG_UPDATED', `Updated drug: ${drug.name}`);
+      await API.updateDrug(editId, { name, category, stock, price, expiry, supplier });
       Utils.showSnackbar('Drug updated', 'success');
     } else {
-      Storage.addDrug(drug);
-      Storage.addAuditEntry('DRUG_ADDED', `Added drug: ${drug.name}`);
+      await API.addDrug({ name, category, stock, price, expiry, supplier });
       Utils.showSnackbar('Drug added', 'success');
     }
     closeSheet();
     renderList();
+  } catch (err) {
+    document.getElementById('mSheetErrorText').textContent = err.message;
+    document.getElementById('mSheetError').style.display = 'flex';
+  }
 }
 
 // ── Delete ────────────────────────────────────────────────
@@ -253,14 +251,17 @@ function closeConfirm() {
   document.getElementById('confirmDialog').classList.remove('show');
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   if (!deleteTargetId) return;
-  Storage.deleteDrug(deleteTargetId);
-  Storage.addAuditEntry('DRUG_DELETED', `Deleted drug ID: ${deleteTargetId}`);
-  closeConfirm();
-  closeDesktopForm();
-  renderList();
-  Utils.showSnackbar('Drug deleted', 'success');
+  try {
+    await API.deleteDrug(deleteTargetId);
+    closeConfirm();
+    closeDesktopForm();
+    renderList();
+    Utils.showSnackbar('Drug deleted', 'success');
+  } catch (err) {
+    Utils.showSnackbar(err.message, 'error');
+  }
 }
 
 // ── Theme ─────────────────────────────────────────────────
