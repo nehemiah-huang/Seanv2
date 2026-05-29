@@ -3,11 +3,9 @@
 let reportType = 'sales';
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (!Utils.requireAuth()) return;
-  Storage.seedIfEmpty();
+  if (!API.requireAuth()) return;
   Nav.render('reports');
 
-  // Set default date range (last 30 days)
   const today = new Date();
   const from  = new Date();
   from.setDate(from.getDate() - 30);
@@ -23,7 +21,7 @@ function selectType(type) {
   document.getElementById('reportResult').style.display = 'none';
 }
 
-function generateReport() {
+async function generateReport() {
   const btn  = document.getElementById('generateBtn');
   const icon = document.getElementById('generateIcon');
   const txt  = document.getElementById('generateTxt');
@@ -33,36 +31,45 @@ function generateReport() {
   txt.textContent  = 'Generating…';
   btn.disabled     = true;
 
-  setTimeout(() => {
+  try {
+    const [drugs, sales] = await Promise.all([
+      API.getDrugs(),
+      API.getSales(),
+    ]);
+
     icon.classList.remove('spinner');
     icon.textContent = 'bar_chart';
     txt.textContent  = 'Generate report';
     btn.disabled     = false;
-    renderReport();
-  }, 800);
+
+    renderReport(drugs, sales);
+  } catch (err) {
+    icon.classList.remove('spinner');
+    icon.textContent = 'bar_chart';
+    txt.textContent  = 'Generate report';
+    btn.disabled     = false;
+    Utils.showSnackbar('Failed to generate report', 'error');
+  }
 }
 
-function renderReport() {
-  const drugs = Storage.getDrugs();
-  const sales = Storage.getSales();
-  const from  = document.getElementById('fromDate').value;
-  const to    = document.getElementById('toDate').value;
+function renderReport(drugs, sales) {
+  const from = document.getElementById('fromDate').value;
+  const to   = document.getElementById('toDate').value;
 
   let title, sub, bars, maxVal, heads, rows;
 
   if (reportType === 'sales') {
     const filtered = sales.filter(s => {
-      const d = s.timestamp ? s.timestamp.split('T')[0] : '';
+      const d = s.created_at ? s.created_at.split('T')[0] : '';
       return d >= from && d <= to;
     });
 
-    // Group by drug
     const drugTotals = {};
     filtered.forEach(sale => {
       (sale.items || []).forEach(item => {
-        if (!drugTotals[item.name]) drugTotals[item.name] = { qty: 0, revenue: 0 };
-        drugTotals[item.name].qty     += item.qty;
-        drugTotals[item.name].revenue += item.qty * item.price;
+        if (!drugTotals[item.drug_name]) drugTotals[item.drug_name] = { qty: 0, revenue: 0 };
+        drugTotals[item.drug_name].qty     += item.quantity;
+        drugTotals[item.drug_name].revenue += parseFloat(item.line_total);
       });
     });
 
@@ -75,8 +82,8 @@ function renderReport() {
       val:   d.revenue,
       color: '#2C7DA0',
     }));
-    heads  = ['Drug', 'Qty Sold', 'Revenue'];
-    rows   = entries.map(([name, d]) => [
+    heads = ['Drug', 'Qty Sold', 'Revenue'];
+    rows  = entries.map(([name, d]) => [
       name,
       d.qty,
       Utils.formatCurrency(d.revenue),
@@ -93,8 +100,8 @@ function renderReport() {
       val:   d.stock,
       color: d.stock < 10 ? '#FFCDD2' : d.stock < 20 ? '#FFF9C4' : '#C8E6C9',
     }));
-    heads  = ['Drug', 'Category', 'Stock', 'Status'];
-    rows   = sorted.map(d => {
+    heads = ['Drug', 'Category', 'Stock', 'Status'];
+    rows  = sorted.map(d => {
       const status = d.stock < 10
         ? `<span class="badge badge-red"><span class="material-icons">warning</span>Critical</span>`
         : d.stock < 20
@@ -107,7 +114,6 @@ function renderReport() {
     title  = 'Expired / Expiring Drugs';
     sub    = `As of ${Utils.formatDate(new Date().toISOString().split('T')[0])}`;
     const sorted = [...drugs].sort((a,b) => Utils.daysUntilExpiry(a.expiry) - Utils.daysUntilExpiry(b.expiry));
-    maxVal = 1;
     bars   = [
       { label:'Expired', val: drugs.filter(d => Utils.daysUntilExpiry(d.expiry) <= 0).length,  color:'#FFCDD2' },
       { label:'<30d',    val: drugs.filter(d => { const x = Utils.daysUntilExpiry(d.expiry); return x > 0 && x <= 30; }).length,  color:'#FFCDD2' },
@@ -122,11 +128,9 @@ function renderReport() {
     });
   }
 
-  // Render
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('resultSub').textContent   = sub;
 
-  // Chart
   document.getElementById('chartBars').innerHTML = bars.map(b => {
     const h = Math.max(4, Math.round((b.val / maxVal) * 100));
     return `
@@ -137,7 +141,6 @@ function renderReport() {
       </div>`;
   }).join('');
 
-  // Table
   document.getElementById('tableHead').innerHTML =
     `<tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr>`;
   document.getElementById('tableBody').innerHTML =

@@ -5,52 +5,63 @@ let resetTargetId  = null;
 const isDesktop    = () => window.innerWidth >= 768;
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (!Utils.requireAuth()) return;
-  Storage.seedIfEmpty();
+  if (!API.requireAuth()) return;
   Nav.render('users');
   renderUsers();
 });
 
 // ── Render user list ──────────────────────────────────────
-function renderUsers() {
-  const users = Storage.getUsers();
-  const list  = document.getElementById('userList');
+async function renderUsers() {
+  const list = document.getElementById('userList');
+  list.innerHTML = `<div class="text-hint text-sm">Loading…</div>`;
 
-  if (!users.length) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon"><span class="material-icons">group</span></div>
-        <p>No users yet</p>
-        <span>Add your first user account</span>
-      </div>`;
-    return;
-  }
+  try {
+    const users = await API.getUsers();
 
-  const roleCls = { Admin:'role-badge-admin', Pharmacist:'role-badge-pharmacist', Attendant:'role-badge-attendant' };
+    if (!users.length) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon"><span class="material-icons">group</span></div>
+          <p>No users yet</p>
+          <span>Add your first user account</span>
+        </div>`;
+      return;
+    }
 
-  list.innerHTML = users.map(user => `
-    <div class="user-card">
-      <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
-      <div class="user-info">
-        <div class="user-name">${user.name}</div>
-        <div class="user-meta">
-          @${user.username}
-          &nbsp;&middot;&nbsp;
-          <span class="badge ${roleCls[user.role] || ''}">${user.role}</span>
+    const roleCls = {
+      Admin:      'role-badge-admin',
+      Pharmacist: 'role-badge-pharmacist',
+      Attendant:  'role-badge-attendant'
+    };
+
+    list.innerHTML = users.map(user => `
+      <div class="user-card">
+        <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+        <div class="user-info">
+          <div class="user-name">${user.name}</div>
+          <div class="user-meta">
+            @${user.username}
+            &nbsp;&middot;&nbsp;
+            <span class="badge ${roleCls[user.role] || ''}">${user.role}</span>
+          </div>
         </div>
-      </div>
-      <div class="user-actions">
-        <button class="act-btn edit" onclick="openEdit('${user.id}')" aria-label="Edit user">
-          <span class="material-icons">edit</span>
-        </button>
-        <button class="act-btn edit" onclick="openReset('${user.id}','${user.name.replace(/'/g,"\\'")}')">
-          <span class="material-icons" style="color:var(--warn);">lock_reset</span>
-        </button>
-        <button class="act-btn del" onclick="openConfirm('${user.id}','${user.name.replace(/'/g,"\\'")}')">
-          <span class="material-icons">delete</span>
-        </button>
-      </div>
-    </div>`).join('');
+        <div class="user-actions">
+          <button class="act-btn edit" onclick="openEdit(${user.id})" aria-label="Edit user">
+            <span class="material-icons">edit</span>
+          </button>
+          <button class="act-btn edit" onclick="openReset(${user.id},'${user.name.replace(/'/g,"\\'")}')">
+            <span class="material-icons" style="color:var(--warn);">lock_reset</span>
+          </button>
+          <button class="act-btn del" onclick="openConfirm(${user.id},'${user.name.replace(/'/g,"\\'")}')">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>`).join('');
+
+  } catch (err) {
+    list.innerHTML = `<div class="text-hint text-sm">Failed to load users</div>`;
+    console.error(err);
+  }
 }
 
 // ── Open add/edit ─────────────────────────────────────────
@@ -67,21 +78,27 @@ function openSheet() {
   }
 }
 
-function openEdit(id) {
-  const user = Storage.getUserById(id);
-  if (!user) return;
-  if (isDesktop()) {
-    openDesktopForm(user);
-  } else {
-    clearMobileForm();
-    document.getElementById('sheetTitle').textContent   = 'Edit user';
-    document.getElementById('mSaveBtnTxt').textContent  = 'Update user';
-    document.getElementById('mPasswordLabel').textContent = 'New password (leave blank to keep)';
-    document.getElementById('mEditUserId').value  = user.id;
-    document.getElementById('mfName').value       = user.name;
-    document.getElementById('mfUsername').value   = user.username;
-    document.getElementById('mfRole').value       = user.role;
-    showBottomSheet();
+async function openEdit(id) {
+  try {
+    const users = await API.getUsers();
+    const user  = users.find(u => u.id === id);
+    if (!user) return;
+
+    if (isDesktop()) {
+      openDesktopForm(user);
+    } else {
+      clearMobileForm();
+      document.getElementById('sheetTitle').textContent    = 'Edit user';
+      document.getElementById('mSaveBtnTxt').textContent   = 'Update user';
+      document.getElementById('mPasswordLabel').textContent = 'New password (leave blank to keep)';
+      document.getElementById('mEditUserId').value  = user.id;
+      document.getElementById('mfName').value       = user.name;
+      document.getElementById('mfUsername').value   = user.username;
+      document.getElementById('mfRole').value       = user.role;
+      showBottomSheet();
+    }
+  } catch (err) {
+    Utils.showSnackbar('Failed to load user', 'error');
   }
 }
 
@@ -119,7 +136,7 @@ function clearDesktopForm() {
   document.getElementById('formError').style.display = 'none';
 }
 
-function saveUser() {
+async function saveUser() {
   const name     = document.getElementById('fName').value.trim();
   const username = document.getElementById('fUsername').value.trim().toLowerCase();
   const role     = document.getElementById('fRole').value;
@@ -135,30 +152,21 @@ function saveUser() {
     return;
   }
 
-  // Check duplicate username
-  const existing = Storage.getUsers().find(u => u.username === username && u.id !== editId);
-  if (existing) {
-    showFormError('formErrorText', 'formError', 'Username already taken');
-    return;
+  try {
+    if (editId) {
+      const payload = { name, username, role };
+      if (password) payload.password = password;
+      await API.updateUser(editId, payload);
+      Utils.showSnackbar('User updated', 'success');
+    } else {
+      await API.addUser({ name, username, role, password });
+      Utils.showSnackbar('User created', 'success');
+    }
+    closeDesktopForm();
+    renderUsers();
+  } catch (err) {
+    showFormError('formErrorText', 'formError', err.message);
   }
-
-  if (editId) {
-    const user = Storage.getUserById(editId);
-    user.name     = name;
-    user.username = username;
-    user.role     = role;
-    if (password) user.password = password;
-    Storage.updateUser(user);
-    Storage.addAuditEntry('USER_UPDATED', `Updated user: ${name}`);
-    Utils.showSnackbar('User updated', 'success');
-  } else {
-    Storage.addUser({ name, username, role, password });
-    Storage.addAuditEntry('USER_CREATED', `Created user: ${name} (${role})`);
-    Utils.showSnackbar('User created', 'success');
-  }
-
-  closeDesktopForm();
-  renderUsers();
 }
 
 // ── Mobile sheet ──────────────────────────────────────────
@@ -180,7 +188,7 @@ function clearMobileForm() {
   document.getElementById('mFormError').style.display = 'none';
 }
 
-function saveMobileUser() {
+async function saveMobileUser() {
   const name     = document.getElementById('mfName').value.trim();
   const username = document.getElementById('mfUsername').value.trim().toLowerCase();
   const role     = document.getElementById('mfRole').value;
@@ -196,27 +204,21 @@ function saveMobileUser() {
     return;
   }
 
-  const existing = Storage.getUsers().find(u => u.username === username && u.id !== editId);
-  if (existing) {
-    showFormError('mFormErrorText', 'mFormError', 'Username already taken');
-    return;
+  try {
+    if (editId) {
+      const payload = { name, username, role };
+      if (password) payload.password = password;
+      await API.updateUser(editId, payload);
+      Utils.showSnackbar('User updated', 'success');
+    } else {
+      await API.addUser({ name, username, role, password });
+      Utils.showSnackbar('User created', 'success');
+    }
+    closeSheet();
+    renderUsers();
+  } catch (err) {
+    showFormError('mFormErrorText', 'mFormError', err.message);
   }
-
-  if (editId) {
-    const user = Storage.getUserById(editId);
-    user.name = name; user.username = username; user.role = role;
-    if (password) user.password = password;
-    Storage.updateUser(user);
-    Storage.addAuditEntry('USER_UPDATED', `Updated user: ${name}`);
-    Utils.showSnackbar('User updated', 'success');
-  } else {
-    Storage.addUser({ name, username, role, password });
-    Storage.addAuditEntry('USER_CREATED', `Created user: ${name} (${role})`);
-    Utils.showSnackbar('User created', 'success');
-  }
-
-  closeSheet();
-  renderUsers();
 }
 
 // ── Delete ────────────────────────────────────────────────
@@ -232,15 +234,18 @@ function closeConfirm() {
   document.getElementById('confirmDialog').classList.remove('show');
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   if (!deleteTargetId) return;
-  const user = Storage.getUserById(deleteTargetId);
-  Storage.deleteUser(deleteTargetId);
-  Storage.addAuditEntry('USER_DELETED', `Deleted user: ${user ? user.name : deleteTargetId}`);
-  closeConfirm();
-  closeDesktopForm();
-  renderUsers();
-  Utils.showSnackbar('User deleted', 'success');
+  try {
+    await API.deleteUser(deleteTargetId);
+    closeConfirm();
+    closeDesktopForm();
+    renderUsers();
+    Utils.showSnackbar('User deleted', 'success');
+  } catch (err) {
+    Utils.showSnackbar(err.message, 'error');
+    closeConfirm();
+  }
 }
 
 // ── Reset password ────────────────────────────────────────
@@ -256,16 +261,17 @@ function closeReset() {
   document.getElementById('resetDialog').classList.remove('show');
 }
 
-function confirmReset() {
+async function confirmReset() {
   const newPw = document.getElementById('newPassword').value;
   if (!newPw) return;
-  const user = Storage.getUserById(resetTargetId);
-  if (!user) return;
-  user.password = newPw;
-  Storage.updateUser(user);
-  Storage.addAuditEntry('PASSWORD_RESET', `Password reset for: ${user.name}`);
-  closeReset();
-  Utils.showSnackbar('Password reset successfully', 'success');
+
+  try {
+    await API.resetPassword(resetTargetId, newPw);
+    closeReset();
+    Utils.showSnackbar('Password reset successfully', 'success');
+  } catch (err) {
+    Utils.showSnackbar(err.message, 'error');
+  }
 }
 
 // ── Helpers ───────────────────────────────────────────────

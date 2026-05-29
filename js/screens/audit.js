@@ -17,10 +17,9 @@ const ACTION_LABELS = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (!Utils.requireAuth()) return;
+  if (!API.requireAuth()) return;
   Nav.render('audit');
 
-  // Default date range — last 30 days
   const today = new Date();
   const from  = new Date();
   from.setDate(from.getDate() - 30);
@@ -30,23 +29,31 @@ document.addEventListener('DOMContentLoaded', () => {
   applyFilters();
 });
 
-function applyFilters() {
-  const logs      = Storage.getAuditLog();
-  const fromDate  = document.getElementById('filterFrom').value;
-  const toDate    = document.getElementById('filterTo').value;
+async function applyFilters() {
+  const from      = document.getElementById('filterFrom').value;
+  const to        = document.getElementById('filterTo').value;
   const action    = document.getElementById('filterAction').value;
-  const userQuery = document.getElementById('filterUser').value.trim().toLowerCase();
+  const userQuery = document.getElementById('filterUser').value.trim();
 
-  filteredLogs = logs.filter(log => {
-    const logDate = log.timestamp ? log.timestamp.split('T')[0] : '';
-    if (fromDate && logDate < fromDate) return false;
-    if (toDate   && logDate > toDate)   return false;
-    if (action   && log.action !== action) return false;
-    if (userQuery && !log.user.toLowerCase().includes(userQuery)) return false;
-    return true;
-  });
+  const tbody = document.getElementById('auditTableBody');
+  const count = document.getElementById('resultCount');
+  tbody.innerHTML = `<tr><td colspan="5" class="audit-empty">Loading…</td></tr>`;
 
-  renderTable();
+  try {
+    const filters = {};
+    if (from)      filters.from   = from;
+    if (to)        filters.to     = to;
+    if (action)    filters.action = action;
+    if (userQuery) filters.user   = userQuery;
+
+    filteredLogs = await API.getAuditLog(filters);
+    count.textContent = `Showing ${filteredLogs.length} entr${filteredLogs.length !== 1 ? 'ies' : 'y'}`;
+    renderTable();
+
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5" class="audit-empty">Failed to load audit log</td></tr>`;
+    console.error(err);
+  }
 }
 
 function clearFilters() {
