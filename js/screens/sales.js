@@ -7,48 +7,45 @@ let payMethod     = 'cash';
 
 const PAY_LABELS = { cash:'Cash', momo:'MTN MoMo', voda:'Vodafone Cash', card:'Card' };
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (!Utils.requireAuth()) return;
-  Storage.seedIfEmpty();
-  Nav.render('sales');
-  renderCart();
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!API.requireAuth()) return;
+    Nav.render('sales');
+    renderCart();
 
-  // Close suggestions on outside click
-  document.addEventListener('click', (e) => {
-    if (!document.getElementById('drugSearch').contains(e.target)) {
-      document.getElementById('suggestions').classList.remove('open');
-    }
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('drugSearch').contains(e.target)) {
+        document.getElementById('suggestions').classList.remove('open');
+      }
+    });
   });
-});
 
 
 // ── Drug search ───────────────────────────────────────────
-function handleDrugSearch(val) {
+async function handleDrugSearch(val) {
   const sug = document.getElementById('suggestions');
   if (!val.trim()) { sug.classList.remove('open'); return; }
 
-  const drugs = Storage.getDrugs().filter(d =>
+  const drugs = await API.getDrugs();
+  const matches = drugs.filter(d =>
     d.name.toLowerCase().includes(val.toLowerCase()) && d.stock > 0
   ).slice(0, 6);
 
-  if (!drugs.length) { sug.classList.remove('open'); return; }
+  if (!matches.length) { sug.classList.remove('open'); return; }
 
-  sug.innerHTML = drugs.map(d => `
-    <div class="sug-item" onclick="selectDrug('${d.id}')">
+  sug.innerHTML = matches.map(d => `
+    <div class="sug-item" onclick="selectDrug(${d.id}, '${d.name.replace(/'/g,"\\'")}', ${d.stock}, ${d.price})">
       <span class="sug-name">${d.name}</span>
       <span class="sug-stock">Stock: ${d.stock}</span>
     </div>`).join('');
   sug.classList.add('open');
 }
 
-function selectDrug(id) {
-  const drug = Storage.getDrugById(id);
-  if (!drug) return;
-  selectedDrug = drug;
+function selectDrug(id, name, stock, price) {
+  selectedDrug = { id, name, stock, price };
   qty = 1;
-  document.getElementById('qtyVal').textContent    = 1;
-  document.getElementById('scName').textContent    = drug.name;
-  document.getElementById('scMeta').textContent    = `Stock: ${drug.stock}  ·  ${Utils.formatCurrency(drug.price)}`;
+  document.getElementById('qtyVal').textContent  = 1;
+  document.getElementById('scName').textContent  = name;
+  document.getElementById('scMeta').textContent  = `Stock: ${stock}  ·  ${Utils.formatCurrency(price)}`;
   document.getElementById('selectedDrugWrap').style.display = 'block';
   document.getElementById('suggestions').classList.remove('open');
   document.getElementById('drugSearch').value = '';
@@ -174,7 +171,7 @@ function selectPay(method) {
 }
 
 // ── Complete sale ─────────────────────────────────────────
-function completeSale() {
+async function completeSale() {
   if (!cart.length) return;
 
   const sub   = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -182,45 +179,39 @@ function completeSale() {
   const grand = Math.max(0, sub - disc);
   const session = Auth.getSession();
 
-  // Deduct stock
-  cart.forEach(item => {
-    const drug = Storage.getDrugById(item.id);
-    if (drug) {
-      drug.stock = Math.max(0, drug.stock - item.qty);
-      Storage.updateDrug(drug);
-    }
-  });
+  try {
+    await API.addSale({
+      items:         cart,
+      subtotal:      sub,
+      discount:      disc,
+      grandTotal:    grand,
+      paymentMethod: payMethod,
+    });
 
-  // Save sale
-  Storage.addSale({
-    items: [...cart],
-    subtotal: sub,
-    discount: disc,
-    grandTotal: grand,
-    paymentMethod: payMethod,
-    cashier: session.name,
-  });
-  Storage.addAuditEntry('SALE_COMPLETED', `Sale completed — ${Utils.formatCurrency(grand)} via ${PAY_LABELS[payMethod]}`);
-  // Build receipt
-  const now = new Date();
-  document.getElementById('receiptDate').textContent    = Utils.formatDateTime(now.toISOString());
-  document.getElementById('receiptCashier').textContent = session.name;
-  document.getElementById('receiptPayment').textContent = PAY_LABELS[payMethod];
-  document.getElementById('receiptSubtotal').textContent = Utils.formatCurrency(sub);
+    // Build receipt
+    const now = new Date();
+    document.getElementById('receiptDate').textContent    = Utils.formatDateTime(now.toISOString());
+    document.getElementById('receiptCashier').textContent = session.name;
+    document.getElementById('receiptPayment').textContent = PAY_LABELS[payMethod];
+    document.getElementById('receiptSubtotal').textContent = Utils.formatCurrency(sub);
 
-  const discRow = document.getElementById('receiptDiscountRow');
-  discRow.style.display = disc > 0 ? 'flex' : 'none';
-  document.getElementById('receiptDiscount').textContent = `- ${Utils.formatCurrency(disc)}`;
-  document.getElementById('receiptTotal').textContent    = Utils.formatCurrency(grand);
+    const discRow = document.getElementById('receiptDiscountRow');
+    discRow.style.display = disc > 0 ? 'flex' : 'none';
+    document.getElementById('receiptDiscount').textContent = `- ${Utils.formatCurrency(disc)}`;
+    document.getElementById('receiptTotal').textContent    = Utils.formatCurrency(grand);
 
-  document.getElementById('receiptItems').innerHTML = cart.map(i => `
-    <div class="receipt-item">
-      <span class="receipt-item-name">${i.qty}&times; ${i.name}</span>
-      <span class="receipt-item-amt">${Utils.formatCurrency(i.qty * i.price)}</span>
-    </div>`).join('');
+    document.getElementById('receiptItems').innerHTML = cart.map(i => `
+      <div class="receipt-item">
+        <span class="receipt-item-name">${i.qty}&times; ${i.name}</span>
+        <span class="receipt-item-amt">${Utils.formatCurrency(i.qty * i.price)}</span>
+      </div>`).join('');
 
-  document.getElementById('overlay').classList.add('show');
-  document.getElementById('receiptSheet').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('receiptSheet').classList.add('open');
+
+  } catch (err) {
+    Utils.showSnackbar(err.message, 'error');
+  }
 }
 
 function closeReceipt() {
