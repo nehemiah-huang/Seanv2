@@ -18,7 +18,8 @@ const Utils = (() => {
   // ── Dates ─────────────────────────────────────────────────
   function formatDate(dateStr) {
     if (!dateStr) return '—';
-    const d = new Date(dateStr + 'T00:00:00');
+    const clean = String(dateStr).split('T')[0];
+    const d     = new Date(clean + 'T00:00:00');
     return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
@@ -31,7 +32,10 @@ const Utils = (() => {
   }
 
   function daysUntilExpiry(dateStr) {
-    const expiry = new Date(dateStr + 'T00:00:00');
+    if (!dateStr) return 9999;
+    // Strip time part if present (MySQL returns full datetime)
+    const clean  = String(dateStr).split('T')[0];
+    const expiry = new Date(clean + 'T00:00:00');
     const today  = new Date();
     today.setHours(0, 0, 0, 0);
     return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));

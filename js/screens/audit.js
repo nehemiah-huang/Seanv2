@@ -80,18 +80,18 @@ function renderTable() {
     return;
   }
 
-  tbody.innerHTML = filteredLogs.map(log => `
-    <tr>
-      <td style="white-space:nowrap;">${Utils.formatDateTime(log.timestamp)}</td>
-      <td>
-        <span class="audit-action-badge action-${log.action}">
-          ${ACTION_LABELS[log.action] || log.action}
-        </span>
-      </td>
-      <td>${log.user}</td>
-      <td>${log.role}</td>
-      <td>${log.detail}</td>
-    </tr>`).join('');
+    tbody.innerHTML = filteredLogs.map(log => `
+        <tr>
+          <td style="white-space:nowrap;">${Utils.formatDateTime(log.created_at)}</td>
+          <td>
+            <span class="audit-action-badge action-${log.action}">
+              ${ACTION_LABELS[log.action] || log.action}
+            </span>
+          </td>
+          <td>${log.user_name || '—'}</td>
+          <td>${log.user_role || '—'}</td>
+          <td>${log.detail}</td>
+        </tr>`).join('');
 }
 
 function exportCSV() {
@@ -102,11 +102,11 @@ function exportCSV() {
 
   const headers = ['Date & Time', 'Action', 'User', 'Role', 'Detail'];
   const rows = filteredLogs.map(log => [
-    Utils.formatDateTime(log.timestamp),
+    Utils.formatDateTime(log.created_at),
     ACTION_LABELS[log.action] || log.action,
-    log.user,
-    log.role,
-    `"${log.detail.replace(/"/g, '""')}"`,
+    log.user_name || '—',
+    log.user_role || '—',
+    `"${(log.detail || '').replace(/"/g, '""')}"`,
   ]);
 
   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
