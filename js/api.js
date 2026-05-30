@@ -2,7 +2,7 @@
 
 const API = (() => {
 
-  const BASE_URL = 'http://localhost:5000/api';
+  const BASE_URL = 'http://10.172.56.218:5000/api';
 
   // ── Token management ──────────────────────────────────────
   function getToken()        { return sessionStorage.getItem('medcare_token'); }
