@@ -509,9 +509,6 @@ select.input-field {
   background: rgba(0,0,0,0.45);
   z-index: 40;
   display: none;
-  max-width: 400px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 .overlay.show { display: block; }
 

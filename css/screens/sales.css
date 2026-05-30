@@ -326,3 +326,37 @@
     align-items: start;
   }
 }
+/* ── Desktop receipt modal ───────────────────────────────── */
+@media (min-width: 768px) {
+  .bottom-sheet#receiptSheet {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(100vh);
+    width: 420px;
+    max-width: 90vw;
+    border-radius: 16px;
+    max-height: 85vh;
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .bottom-sheet#receiptSheet.open {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  .sheet-handle { display: none; }
+}
+/* ── Fix payment chips wrapping on desktop ───────────────── */
+@media (min-width: 768px) {
+  .pay-methods {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .pay-chip {
+    min-width: 0;
+    flex: 1;
+    font-size: 11px;
+    padding: 0 6px;
+  }
+}
