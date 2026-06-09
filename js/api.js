@@ -2,7 +2,7 @@
 
 const API = (() => {
 
-  const BASE_URL = 'seanv2-production.up.railway.app';
+  const BASE_URL = 'https://seanv2-production.up.railway.app/api';
 
   // ── Token management ──────────────────────────────────────
   function getToken()        { return sessionStorage.getItem('medcare_token'); }
