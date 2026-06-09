@@ -933,6 +933,77 @@ select.input-field {
   margin-top: 2px;
 }
 
+
+/* ── Fix confirm dialogs always visible on desktop ───────── */
+.confirm-dialog {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 60;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.confirm-dialog.show {
+  display: flex;
+}
+
+.confirm-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 360px;
+  border: 0.5px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.confirm-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.confirm-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.confirm-cancel {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 19px;
+  border: 1.5px solid var(--border-input);
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.confirm-delete {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 19px;
+  border: none;
+  background: var(--error);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
 /* ── TABLET (768px+) ────────────────────────────────────────── */
 @media (min-width: 768px) {
   /* Show top nav, hide bottom nav */
