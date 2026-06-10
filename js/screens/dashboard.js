@@ -65,19 +65,21 @@ async function loadKPIs() {
 function renderNavCards() {
   const accessible = Auth.getNavItems();
   const grid = document.getElementById('navGrid');
-  grid.innerHTML = NAV_CARDS.map(card => {
-    const canSee   = accessible.includes(card.id);
-    const isActive = card.active && canSee;
-    return `
-      <a class="nav-card ${!isActive ? 'disabled' : ''}"
-         href="${isActive ? card.href : '#'}"
-         onclick="${!isActive ? 'return false;' : ''}">
-        ${!isActive ? `<span class="badge-soon nav-card-soon">Coming soon</span>` : ''}
-        <span class="material-icons">${card.icon}</span>
-        <span class="nav-card-label">${card.label}</span>
-        ${isActive ? `<span class="material-icons nav-card-arrow">chevron_right</span>` : ''}
-      </a>`;
-  }).join('');
+
+  // Only show cards the user has access to — nothing else
+  const visibleCards = NAV_CARDS.filter(card => accessible.includes(card.id));
+
+  if (!visibleCards.length) {
+    grid.innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = visibleCards.map(card => `
+    <a class="nav-card" href="${card.href}">
+      <span class="material-icons">${card.icon}</span>
+      <span class="nav-card-label">${card.label}</span>
+      <span class="material-icons nav-card-arrow">chevron_right</span>
+    </a>`).join('');
 }
 
 function toggleRoleChip() {
