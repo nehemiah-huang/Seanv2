@@ -26,6 +26,7 @@
 
   /* Surfaces */
   --bg-screen:        #F8F9FA;
+  /* Stellar L */
   --bg-card:          #FFFFFF;
   --bg-input:         #F7F8F9;
   --bg-input-focus:   #EBF4FA;
@@ -67,7 +68,9 @@
 
 /* ── 2. DARK MODE VARIABLES ─────────────────────────────────── */
 [data-theme="dark"] {
+  /* BG Screen*/
   --bg-screen:        #0f1923;
+  /*Stellar D*/
   --bg-card:          #1a2633;
   --bg-input:         #1e2d3d;
   --bg-input-focus:   #1e2d3d;
@@ -634,6 +637,7 @@ select.input-field {
 
 .kpi-card {
   background: var(--bg-card);
+  /* Wuwa*/
   border-radius: var(--radius-card);
   border: 0.5px solid var(--border);
   padding: 14px;
@@ -783,6 +787,7 @@ select.input-field {
   display: none;
   height: 64px;
   background: var(--topbar-bg);
+  /* sekiro */
   box-shadow: var(--topbar-shadow);
   align-items: center;
   justify-content: space-between;

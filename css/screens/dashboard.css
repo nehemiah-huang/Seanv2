@@ -96,6 +96,7 @@
 
 .nav-card {
   background: var(--bg-card);
+  /*waterfall*/
   border-radius: var(--radius-card);
   border: 0.5px solid var(--border);
   padding: 16px;
